@@ -1274,8 +1274,7 @@ async function handleStravaCallback(){
   if(btn)btn.textContent='Connecting...';
 
   try{
-    const redirectUri=encodeURIComponent('https://codystrainingplan.netlify.app/');
-    const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code+'&redirect_uri='+redirectUri);
+    const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code);
     const responseText=await res.text();
     let data;
     try{data=JSON.parse(responseText);}catch{throw new Error('Function response not JSON: '+responseText.slice(0,100));}
