@@ -31,22 +31,19 @@ exports.handler = async (event) => {
     }
 
     try {
-      // redirect_uri must match exactly what was sent during authorization
-      const redirect_uri = params.redirect_uri || 'https://codystrainingplan.netlify.app/';
       const res = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           client_id: STRAVA_CLIENT_ID,
           client_secret: STRAVA_CLIENT_SECRET,
-          code,
-          redirect_uri,
+          code: code,
           grant_type: 'authorization_code'
         })
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Token exchange failed');
+      if (!res.ok) throw new Error('Strava: ' + JSON.stringify(data));
 
       return {
         statusCode: 200,
