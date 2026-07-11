@@ -1264,18 +1264,20 @@ async function handleStravaCallback(){
   try{
     const redirectUri=encodeURIComponent('https://codystrainingplan.netlify.app/');
     const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code+'&redirect_uri='+redirectUri);
-    if(!res.ok)throw new Error('Function returned '+res.status+' — is strava.js deployed?');
-    const data=await res.json();
-    if(!data.access_token)throw new Error(data.error||'No token returned');
+    const responseText=await res.text();
+    let data;
+    try{data=JSON.parse(responseText);}catch{throw new Error('Function response not JSON: '+responseText.slice(0,100));}
+    if(!res.ok)throw new Error('Function error ('+res.status+'): '+JSON.stringify(data));
+    if(!data.access_token)throw new Error('No token. Strava said: '+JSON.stringify(data));
     setStravaToken(data);
     updateStravaBtn(true, data.athlete&&data.athlete.firstname?data.athlete.firstname:null);
     setTimeout(showStravaActivities,300);
   }catch(e){
     console.error('Strava auth failed:',e.message);
     if(btn)btn.textContent='Connect Strava';
-    // Show helpful error in modal
     document.getElementById('stravaModalTitle').textContent='Connection Failed';
-    document.getElementById('stravaBody').innerHTML='<p style="font-size:13px;color:var(--rc);margin-bottom:12px">'+e.message+'</p>'
+    document.getElementById('stravaBody').innerHTML=''
+      +'<p style="font-size:11px;color:var(--rc);margin-bottom:12px;word-break:break-all">'+e.message+'</p>'
       +'<button onclick="connectStrava()" style="background:#FC4C02;color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%">Try Again</button>';
     document.getElementById('stravaModal').style.display='flex';
   }
