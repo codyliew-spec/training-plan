@@ -1252,7 +1252,19 @@ async function handleStravaCallback(){
   const params=new URLSearchParams(window.location.search);
   const code=params.get('code');
   const scope=params.get('scope');
-  if(!code||!scope)return;
+  const error=params.get('error');
+
+  // Show error if Strava denied access
+  if(error){
+    window.history.replaceState({},'',window.location.pathname);
+    document.getElementById('stravaModalTitle').textContent='Strava Denied Access';
+    document.getElementById('stravaBody').innerHTML='<p style="font-size:13px;color:var(--rc);margin-bottom:12px">Strava returned: '+error+'</p>'
+      +'<button onclick="connectStrava()" style="background:#FC4C02;color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%">Try Again</button>';
+    document.getElementById('stravaModal').style.display='flex';
+    return;
+  }
+
+  if(!code)return;
 
   // Clean URL immediately so back button works cleanly
   window.history.replaceState({},'',window.location.pathname);
