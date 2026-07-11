@@ -1030,7 +1030,8 @@ function closeStrava(){
 }
 
 function connectStrava(){
-  const redirect=encodeURIComponent(window.location.href.split('?')[0].split('#')[0]);
+  // Hardcode the redirect URI to exactly match Strava's registered callback domain
+  const redirect=encodeURIComponent('https://codystrainingplan.netlify.app/');
   const url='https://www.strava.com/oauth/authorize'
     +'?client_id='+STRAVA_CLIENT_ID
     +'&redirect_uri='+redirect
@@ -1261,7 +1262,8 @@ async function handleStravaCallback(){
   if(btn)btn.textContent='Connecting...';
 
   try{
-    const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code);
+    const redirectUri=encodeURIComponent('https://codystrainingplan.netlify.app/');
+    const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code+'&redirect_uri='+redirectUri);
     if(!res.ok)throw new Error('Function returned '+res.status+' — is strava.js deployed?');
     const data=await res.json();
     if(!data.access_token)throw new Error(data.error||'No token returned');
