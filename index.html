@@ -11,13 +11,13 @@
 :root{
   --white:#FFFFFF;--off:#F7F7F7;--ink:#0D0D0D;--ink-m:#555;--ink-d:#999;
   --red:#E8320A;--rule:#E0E0E0;
-  --lc:#8B3A0F;--lb:rgba(139,58,15,.07);
-  --qc:#5C4A0A;--qb:rgba(92,74,10,.07);
-  --ec:#1A4D2E;--eb:rgba(26,77,46,.07);
-  --sc:#1F3566;--sb:rgba(31,53,102,.07);
-  --rc:#8B0000;--rb:rgba(139,0,0,.08);
-  --gc:#3D1F6B;--gb:rgba(61,31,107,.08);
-  --dc:#888;--db:rgba(136,136,136,.05);
+  --lc:#C4410C;--lb:#FDE8DC;   /* Long — vivid burnt orange */
+  --qc:#7A5C00;--qb:#FFF3C4;   /* Quality — golden amber */
+  --ec:#1A6B3A;--eb:#D4F0E0;   /* Easy — forest green */
+  --sc:#1A3A8F;--sb:#D4E0FF;   /* Strength — royal blue */
+  --rc:#A00000;--rb:#FFD4D4;   /* Race — deep red */
+  --gc:#5B1A8F;--gb:#EAD4FF;   /* Goal — vivid purple */
+  --dc:#777;--db:#F0F0F0;      /* Rest — neutral grey */
 }
 body{background:var(--white);color:var(--ink);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.55;min-height:100vh}
 
@@ -86,16 +86,19 @@ main{max-width:1080px;margin:0 auto;padding:24px 32px 64px}
 .cn{font-family:'DM Serif Display',serif;font-size:14px;color:var(--ink-m);margin-bottom:3px}
 .ct{font-size:8px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
 .ck{font-size:8px;color:var(--ink-d);margin-top:auto;font-weight:500}
-.mc.vd::after{content:'✓';position:absolute;top:4px;right:6px;font-size:9px;color:var(--ec);font-weight:700}
-.mc.vs::after{content:'–';position:absolute;top:4px;right:6px;font-size:10px;color:var(--ink-d)}
-.mc.vp::after{content:'◑';position:absolute;top:4px;right:6px;font-size:9px;color:var(--qc)}
-.tl{background:var(--lb)}.tl .ct{color:var(--lc)}
-.tq{background:var(--qb)}.tq .ct{color:var(--qc)}
-.te{background:var(--eb)}.te .ct{color:var(--ec)}
-.ts{background:var(--sb)}.ts .ct{color:var(--sc)}
-.tr{background:var(--rb)}.tr .ct{color:var(--rc)}
-.tg{background:var(--gb)}.tg .ct{color:var(--gc)}
-.td .ct{color:var(--dc)}
+.mc.vd{border-bottom:3px solid var(--ec)!important}
+.mc.vd::after{content:'✓ Done';position:absolute;bottom:4px;right:5px;font-size:7px;color:var(--ec);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.mc.vs{opacity:.5}
+.mc.vs::after{content:'Skip';position:absolute;bottom:4px;right:5px;font-size:7px;color:var(--ink-d);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.mc.vp{border-bottom:3px solid var(--qc)!important}
+.mc.vp::after{content:'Part';position:absolute;bottom:4px;right:5px;font-size:7px;color:var(--qc);font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.tl{background:var(--lb)}.tl .ct{color:var(--lc);font-weight:700}
+.tq{background:var(--qb)}.tq .ct{color:var(--qc);font-weight:700}
+.te{background:var(--eb)}.te .ct{color:var(--ec);font-weight:700}
+.ts{background:var(--sb)}.ts .ct{color:var(--sc);font-weight:700}
+.tr{background:var(--rb)}.tr .ct{color:var(--rc);font-weight:700}
+.tg{background:var(--gb)}.tg .ct{color:var(--gc);font-weight:700}
+.td{background:#F5F5F5}.td .ct{color:var(--dc)}
 
 /* ── WEEK ── */
 .wnav{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
@@ -108,11 +111,19 @@ main{max-width:1080px;margin:0 auto;padding:24px 32px 64px}
 .wcols{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--rule)}
 .wc{background:var(--white);padding:12px 10px;cursor:pointer;transition:background .12s;min-height:145px;display:flex;flex-direction:column;position:relative;border-top:3px solid transparent}
 .wc:hover{background:var(--off)}
-.wc.tl{border-top-color:var(--lc)}.wc.tq{border-top-color:var(--qc)}
-.wc.te{border-top-color:var(--ec)}.wc.ts{border-top-color:var(--sc)}
-.wc.tr{border-top-color:var(--rc)}.wc.tg{border-top-color:var(--gc)}.wc.td{opacity:.5}
-.wc.wd::after,.wc.ws::after,.wc.wp::after{position:absolute;top:7px;right:8px;font-size:9px;font-weight:700}
-.wc.wd::after{content:'✓';color:var(--ec)}.wc.ws::after{content:'–';color:var(--ink-d)}.wc.wp::after{content:'◑';color:var(--qc)}
+.wc.tl{border-top-color:var(--lc);background:var(--lb)}
+.wc.tq{border-top-color:var(--qc);background:var(--qb)}
+.wc.te{border-top-color:var(--ec);background:var(--eb)}
+.wc.ts{border-top-color:var(--sc);background:var(--sb)}
+.wc.tr{border-top-color:var(--rc);background:var(--rb)}
+.wc.tg{border-top-color:var(--gc);background:var(--gb)}
+.wc.td{opacity:.45;background:#F5F5F5}
+.wc.wd::after,.wc.ws::after,.wc.wp::after{position:absolute;top:7px;right:8px;font-size:8px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.wc.wd{border-bottom:3px solid var(--ec)!important}
+.wc.wd::after{content:'✓ Done';color:var(--ec)}
+.wc.ws::after{content:'Skipped';color:var(--ink-d)}
+.wc.wp{border-bottom:3px solid var(--qc)!important}
+.wc.wp::after{content:'◑ Part';color:var(--qc)}
 .wcday{font-size:8px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-d);margin-bottom:3px}
 .wcdate{font-family:'DM Serif Display',serif;font-size:17px;color:var(--ink);margin-bottom:8px}
 .wctype{font-size:8px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
@@ -205,69 +216,105 @@ main{max-width:1080px;margin:0 auto;padding:24px 32px 64px}
 .strava-act-nomatch{font-size:10px;color:var(--ink-d)}
 /* ── MOBILE ── */
 @media(max-width:680px){
-  .mast{padding:0 16px}.mast-logo{font-size:10px}.mast-nav{display:none}
-  .hero{padding:28px 16px 24px}.hero-title{font-size:34px;line-height:1}
-  .hero-sub{font-size:13px}.hero-by{font-size:8px}
-  .hero,.nav-inner,.pbar-inner,main{padding-left:16px;padding-right:16px}
-  .srow{padding-left:16px;padding-right:16px}
+  /* Global */
+  .mast,.hero,main,.nav-inner,.pbar-inner,.srow{padding-left:14px;padding-right:14px}
 
-  /* Phase bar */
-  .pbar-inner{padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;display:flex}
-  .pseg{min-width:56px;padding:8px 4px}.pseg-s{font-size:7px;letter-spacing:.06em}.pseg-n{font-size:9px}
+  /* Masthead — compact single line */
+  .mast{padding:0 14px;min-height:44px}
+  .mast-logo{font-size:9px;letter-spacing:.16em}
+  .mast-nav{display:none}
 
-  /* Nav */
+  /* Hero — tighter */
+  .hero{padding:20px 14px 18px}
+  .hero-title{font-size:32px;line-height:1}
+  .hero-sub{font-size:12px;margin-bottom:12px}
+  .hero-by{font-size:8px}
+  .chips{gap:6px}
+  .chip{font-size:9px;padding:4px 10px}
+
+  /* Phase bar — horizontal scroll, abbreviated */
+  .pbar-inner{padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;display:flex}
+  .pbar-inner::-webkit-scrollbar{display:none}
+  .pseg{min-width:72px;padding:8px 6px;flex-shrink:0}
+  .pseg-s{font-size:7px;letter-spacing:.06em}
+  .pseg-n{font-size:10px}
+
+  /* Nav — full width tabs */
   .nav-inner{padding:0;flex-direction:column;align-items:stretch}
   .tabs{width:100%;border-right:none;border-bottom:1px solid var(--rule);display:flex}
-  .tab{flex:1;padding:13px 0;font-size:9px;letter-spacing:.1em}
-  .legend{padding:8px 16px;gap:10px}
+  .tab{flex:1;padding:12px 0;font-size:9px;letter-spacing:.1em;text-align:center}
+  .legend{padding:8px 14px;gap:8px;font-size:8px;flex-wrap:wrap}
   .li{font-size:8px}
 
-  /* Stats */
-  .srow{display:grid;grid-template-columns:repeat(3,1fr);padding-top:10px;padding-bottom:10px}
-  .si{padding:8px 10px;border-right:1px solid var(--rule);border-bottom:none}
+  /* Stats — 3-col grid */
+  .srow{display:grid;grid-template-columns:repeat(3,1fr);padding-top:10px;padding-bottom:10px;gap:0}
+  .si{padding:10px 10px;border-right:1px solid var(--rule);border-bottom:none}
   .si:nth-child(3){border-right:none}
   .sv{font-size:18px}.sl{font-size:7px}
 
-  /* Month cells */
+  /* Month — compact readable cells */
+  .mblock{margin-bottom:24px}
   .mname{font-size:14px}
-  .dh{font-size:7px;padding:3px 0}
-  .mc{min-height:48px;padding:4px 3px}
-  .cn{font-size:11px;margin-bottom:1px}.ct{font-size:7px;letter-spacing:0}.ck{display:none}
-  .mc.vd::after,.mc.vs::after,.mc.vp::after{font-size:7px;top:2px;right:3px}
+  .mcnt{font-size:8px}
+  .mgrid{gap:1px}
+  .dh{font-size:8px;padding:4px 0}
+  .mc{min-height:56px;padding:5px 4px}
+  .cn{font-size:12px;font-weight:700;margin-bottom:2px}
+  .ct{font-size:8px;letter-spacing:0;line-height:1.2}
+  .ck{font-size:8px;margin-top:3px}
+  .mc.vd::after,.mc.vs::after,.mc.vp::after{font-size:7px;bottom:3px;right:3px}
 
-  /* Week — single col */
+  /* Week — single column card list */
   .wnav{gap:8px;padding-bottom:10px;flex-wrap:wrap}
-  .wh{font-size:15px}.wm{font-size:8px}.wv{width:100%;margin-left:0}.wb{margin-left:0}
-  .wcols{grid-template-columns:1fr;gap:1px;background:var(--rule)}
-  .wc{min-height:auto;padding:13px 14px;border-top-width:3px}
-  .wcdate{font-size:20px;margin-bottom:6px}.wcsess{font-size:11px}.wctof{margin-top:5px}
+  .wh{font-size:15px}.wm{font-size:8px}
+  .wv{font-size:9px;width:100%;margin-top:2px}
+  .wb{margin-left:0;font-size:9px}
+  .wcols{grid-template-columns:1fr;gap:2px;background:transparent}
+  .wc{min-height:auto;padding:14px;border-top-width:3px;border-radius:2px;margin-bottom:2px;display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:0 12px}
+  .wcday{grid-column:1;grid-row:1;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-d);margin-bottom:0;white-space:nowrap}
+  .wcdate{grid-column:1;grid-row:2;font-family:'DM Serif Display',serif;font-size:22px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:0}
+  .wctype{grid-column:2;grid-row:1/3;align-self:center;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:0}
+  .wcsess{grid-column:2;grid-row:2;font-size:11px;color:var(--ink-m);line-height:1.4}
+  .wctof{grid-column:3;grid-row:1/3;align-self:center;font-size:10px;color:var(--ink-d);text-align:right;white-space:nowrap}
+  .wc.wd::after,.wc.ws::after,.wc.wp::after{top:10px;right:10px}
 
-  /* Day view — stacked */
-  .dlayout{grid-template-columns:1fr;gap:0;background:transparent}
-  .dsidebar{max-height:280px;border:1px solid var(--rule);margin-bottom:12px}
-  .drow{padding:12px 14px;min-height:50px}
-  .drd{font-size:12px}.drt{font-size:10px}.drs{font-size:12px}
+  /* Day — panel first, list below */
+  .dlayout{display:flex;flex-direction:column;gap:0;background:transparent}
+  .dpanel{order:1;padding:18px 14px;border-left:none!important;border-top:4px solid var(--ink);margin-bottom:12px}
+  .dsidebar{order:2;max-height:none;height:auto;border:none;overflow:visible;display:flex;flex-direction:column;gap:2px}
+  .drow{padding:12px 14px;border:1px solid var(--rule);border-radius:2px;min-height:48px}
+  .drow.mob-hidden{display:none!important}
+  .drd{font-size:12px;font-weight:600}.drt{font-size:10px}.drs{font-size:13px}
+  .drow.sel{border-color:var(--ink);background:var(--ink)}
+  .drow.sel .drd,.drow.sel .drt{color:#fff}
 
-  /* Day panel */
-  .dpanel{padding:18px 16px}
-  .dbc{font-size:7px;flex-wrap:wrap;gap:3px}
-  .dh2{font-size:22px}.dby{font-size:8px}
-  .dmet{gap:14px;padding:10px 0}.dmv{font-size:17px}.dml{font-size:7px}
-  .dsess{font-size:13px}.dnote{font-size:12px;padding:9px 11px}
+  /* Browse all days toggle */
+  .mob-expand-btn{display:flex!important;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px 14px;background:var(--off);border:1px solid var(--rule);border-radius:2px;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-m);cursor:pointer;margin-bottom:4px}
+  .dh2{font-size:24px}
+  .dbc{font-size:8px;flex-wrap:wrap;gap:3px;margin-bottom:10px}
+  .dby{font-size:8px}
+  .dmet{gap:14px;padding:10px 0}
+  .dmv{font-size:17px}.dml{font-size:7px}
+  .dsess{font-size:13px}
 
-  /* Strength */
-  .sthdr{padding:13px 14px;min-height:48px}.sthl{font-size:8px}
+  /* Strength accordion */
+  .sthdr{padding:12px 14px;min-height:48px}.sthl{font-size:8px}
 
-  /* Log — big touch targets */
-  .logbtns{gap:6px}
-  .lb2{padding:11px 10px;min-height:44px;flex:1;font-size:9px}
+  /* Log section — big touch targets */
+  .logbtns{gap:6px;flex-wrap:wrap}
+  .lb2{padding:11px 10px;min-height:44px;flex:1;font-size:9px;text-align:center}
   .logrow{flex-direction:column;gap:8px}
-  .logi{font-size:14px;padding:10px;min-height:44px}
-  .logta{font-size:13px;padding:10px;min-height:80px}
-  .logsv{padding:12px 0;min-height:44px;width:100%;margin-top:8px;font-size:10px}
-  .flash{display:block;margin-left:0;margin-top:6px;text-align:center;font-size:9px}
+  .logi{font-size:15px;padding:11px 12px;min-height:48px}
+  .logta{font-size:13px;padding:10px 12px;min-height:80px}
+  .logsv{padding:14px 0;min-height:48px;width:100%;margin-top:10px;font-size:10px}
+  .flash{display:block;margin-left:0;margin-top:6px;text-align:center}
   .adapt{padding:10px 12px}.adtb{font-size:11px}
+
+  /* Day sidebar — on mobile show as horizontal scrollable chip list above panel */
+  .day-mob-toggle{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px;scrollbar-width:none;margin-bottom:12px}
+  .day-mob-toggle::-webkit-scrollbar{display:none}
 }
+
 
 @media(min-width:681px) and (max-width:900px){
   .mast,.hero,main,.srow,.nav-inner,.pbar-inner{padding-left:20px;padding-right:20px}
@@ -416,206 +463,205 @@ function gt(type,km){
 }
 
 const W=[
- {n:1,ph:"Recovery",lb:"Post-Race Rest",tot:"~26km",tof:"~3–4h",rng:"9–14 Jul",blk:"30km Block",days:[
-  ["Thu 9 Jul","e","Easy","6km","6km easy, flat.","4-5/10 perceived. No elevation pressure. First session — ease back in."],
-  ["Fri 10 Jul","d","Walk","","Rest or 30min easy walk.","Keep moving gently without loading the legs."],
-  ["Sat 11 Jul","e","Easy","8km","8km easy trail.","MacRitchie flat. Don't push. Just move."],
+ {n:1,ph:"Recovery",lb:"Post-Race Rest",tot:"~26km",tof:"~3–4h",rng:"9–15 Jul",blk:"30km Block",days:[
+  ["Thu 9 Jul","e","Easy","6km","6km easy, flat.","4-5/10 perceived. No elevation pressure. First session back."],
+  ["Fri 10 Jul","d","Walk","","Rest or 30min easy walk.","Keep moving without loading the legs."],
+  ["Sat 11 Jul","e","Easy","8km","8km easy trail.","MacRitchie flat. Don't push."],
   ["Sun 12 Jul","d","Rest","","Rest.",""],
   ["Mon 13 Jul","d","Rest","","Rest.",""],
-  ["Tue 14 Jul","e","Easy Long","12km","12km easy MacRitchie — shakeout, not a workout.","Feel good, feel easy. Nothing more."],
-  ["Wed 15 Jul","d","Rest","","Rest.",""],
+  ["Tue 14 Jul","e","Easy","8km","8km easy trail.",""],
+  ["Wed 15 Jul","e","Easy Long","12km","12km easy MacRitchie — shakeout, not a workout.","Feel good, feel easy. Nothing more."],
  ]},
- {n:2,ph:"Build",lb:"Establish Rhythm",tot:"~46km",tof:"~6–8h",rng:"16–22 Jul",blk:"30km Block",days:[
+ {n:2,ph:"Build",lb:"Establish Rhythm",tot:"~44km",tof:"~6–7h",rng:"16–22 Jul",blk:"30km Block",days:[
   ["Thu 16 Jul","d","Rest","","Rest.",""],
   ["Fri 17 Jul","e","Easy","8km","8km easy trail.","Conversational effort throughout."],
-  ["Sat 18 Jul","q","Quality + Str A","10km","10km with 2×15min moderate (6/10). Strength A evening.","Moderate = sentences but not a long conversation.",1],
-  ["Sun 19 Jul","e","Easy","6km","6km easy recovery.","Walk breaks fine if legs are heavy."],
-  ["Mon 20 Jul","s","Strength B","","Strength B — 25–30min.","Short and sharp. Not fatiguing before the long run.",0,1],
-  ["Tue 21 Jul","l","Long Run","16km","16km long run, MacRitchie, easy effort.","One gel. Start building the nutrition habit."],
-  ["Wed 22 Jul","e","Easy","6km","6km easy shakeout.",""],
+  ["Sat 18 Jul","l","Long Run","16km","16km long run, MacRitchie, easy effort throughout.","One gel. Start building the nutrition habit."],
+  ["Sun 19 Jul","e","Easy","6km","6km easy recovery.","Walk breaks fine if legs feel heavy."],
+  ["Mon 20 Jul","s","Strength B","","Strength B — 25-30min.","Short and sharp.",0,1],
+  ["Tue 21 Jul","e","Easy","8km","8km easy.",""],
+  ["Wed 22 Jul","q","Quality + Str A","10km","10km with 2x15min moderate (6/10). Strength A after.","Moderate = sentences but not a long conversation.",1],
  ]},
- {n:3,ph:"Build",lb:"Introduce Hills",tot:"~44km",tof:"~6–7h",rng:"22–28 Jul",blk:"30km Block",days:[
-  ["Mon 22 Jul","d","Rest","","Rest.",""],
-  ["Tue 23 Jul","e","Easy","8km","8km easy trail.",""],
-  ["Wed 24 Jul","q","Hill Reps + Str A","8km","6×3min uphill hard, walk down full recovery. Strength A evening.","Drive arms, shorten stride on climbs.",1],
-  ["Thu 25 Jul","e","Easy","6km","6km easy recovery.",""],
-  ["Fri 26 Jul","s","Strength B","","Strength B — 25–30min.","",0,1],
-  ["Sat 27 Jul","l","Long Run","18km","18km long run. Introduce elevation intentionally.","Don't avoid the hills."],
-  ["Sun 28 Jul","e","Easy","6km","6km easy.",""],
+ {n:3,ph:"Build",lb:"Introduce Hills",tot:"~44km",tof:"~6–7h",rng:"23–29 Jul",blk:"30km Block",days:[
+  ["Thu 23 Jul","d","Rest","","Rest.",""],
+  ["Fri 24 Jul","e","Easy","8km","8km easy trail.",""],
+  ["Sat 25 Jul","l","Long Run","18km","18km long run. Introduce elevation intentionally.","Don't avoid the hills."],
+  ["Sun 26 Jul","e","Easy","6km","6km easy recovery.",""],
+  ["Mon 27 Jul","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 28 Jul","e","Easy","8km","8km easy.",""],
+  ["Wed 29 Jul","q","Hill Reps + Str A","8km","6x3min uphill hard, walk down full recovery. Strength A after.","Drive arms, shorten stride on climbs.",1],
  ]},
- {n:4,ph:"Recovery",lb:"Down Week",tot:"~35km",tof:"~4h 30m",rng:"29 Jul – 4 Aug",blk:"30km Block",days:[
-  ["Mon 29 Jul","d","Rest","","Rest.",""],
-  ["Tue 30 Jul","e","Easy","7km","7km easy.",""],
-  ["Wed 31 Jul","q","Moderate + Str A","8km","8km moderate with strides. Strength A at 70%.","Every 4th week is a down week. Non-negotiable.",1],
-  ["Thu 1 Aug","e","Easy","6km","6km easy.",""],
-  ["Fri 2 Aug","d","Rest","","Rest. One strength session this week only.",""],
-  ["Sat 3 Aug","l","Long Run","14km","14km easy. Pull back deliberately.","Should feel almost embarrassingly easy."],
-  ["Sun 4 Aug","d","Rest","","Rest.",""],
+ {n:4,ph:"Recovery",lb:"Down Week",tot:"~32km",tof:"~4h",rng:"30 Jul – 5 Aug",blk:"30km Block",days:[
+  ["Thu 30 Jul","d","Rest","","Rest.",""],
+  ["Fri 31 Jul","e","Easy","6km","6km easy.",""],
+  ["Sat 1 Aug","l","Long Run","14km","14km easy. Pull back deliberately.","Should feel almost embarrassingly easy. That's the point."],
+  ["Sun 2 Aug","e","Easy","5km","5km easy.",""],
+  ["Mon 3 Aug","d","Rest","","Rest. One strength session this week only.",""],
+  ["Tue 4 Aug","e","Easy","7km","7km easy.",""],
+  ["Wed 5 Aug","q","Moderate + Str A","8km","8km moderate with strides. Strength A at 70%.","Every 4th week is a down week. Non-negotiable.",1],
  ]},
- {n:5,ph:"Specific",lb:"Push Past 21km",tot:"~53km",tof:"~7–9h",rng:"5–11 Aug",blk:"30km Block",days:[
-  ["Mon 5 Aug","d","Rest","","Rest.",""],
-  ["Tue 6 Aug","e","Easy","8km","8km easy trail.",""],
-  ["Wed 7 Aug","q","Quality + Str A","10km","10km moderate with 200m elevation gain. Strength A evening.","Run morning, lift evening.",1],
-  ["Thu 8 Aug","e","Easy","7km","7km easy recovery.",""],
-  ["Fri 9 Aug","s","Strength B","","Strength B — 25–30min.","",0,1],
-  ["Sat 10 Aug","l","Long Run","22km","22km — first serious long effort. Eat every 45min.","Race simulation from a nutrition standpoint."],
-  ["Sun 11 Aug","e","Shakeout","6km","6km easy shakeout within 24hrs of long run.","Trains your legs for what km 25–30 feels like."],
+ {n:5,ph:"Specific",lb:"Push Past 21km",tot:"~51km",tof:"~7–8h",rng:"6–12 Aug",blk:"30km Block",days:[
+  ["Thu 6 Aug","d","Rest","","Rest.",""],
+  ["Fri 7 Aug","e","Easy","8km","8km easy trail.",""],
+  ["Sat 8 Aug","l","Long Run","22km","22km — first serious long effort. Eat every 45min.","Race simulation from a nutrition standpoint."],
+  ["Sun 9 Aug","e","Easy","7km","7km easy shakeout within 24hrs of long run.","Trains your legs for what km 25-30 feels like."],
+  ["Mon 10 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 11 Aug","e","Easy","8km","8km easy.",""],
+  ["Wed 12 Aug","q","Quality + Str A","10km","10km moderate with 200m elevation gain. Strength A after.","Back-to-back quality. Run morning, lift afternoon.",1],
  ]},
- {n:6,ph:"Specific",lb:"Break the Barrier",tot:"~47km",tof:"~7–8h",rng:"12–18 Aug",blk:"30km Block",days:[
-  ["Mon 12 Aug","d","Rest","","Rest.",""],
-  ["Tue 13 Aug","e","Easy","9km","9km easy trail.",""],
-  ["Wed 14 Aug","q","Hill Reps + Str A","9km","8×3min or 6×4min hill reps. Strength A evening.","The difference from Week 3 should be noticeable.",1],
-  ["Thu 15 Aug","e","Easy","7km","7km easy.",""],
-  ["Fri 16 Aug","s","Strength B","","Strength B — 25–30min.","",0,1],
-  ["Sat 17 Aug","l","Long Run","24km","24km — push past the 21km barrier.","A psychological milestone. Respect it."],
-  ["Sun 18 Aug","e","Shakeout","7km","7km easy shakeout.",""],
+ {n:6,ph:"Specific",lb:"Break the Barrier",tot:"~48km",tof:"~7–8h",rng:"13–19 Aug",blk:"30km Block",days:[
+  ["Thu 13 Aug","d","Rest","","Rest.",""],
+  ["Fri 14 Aug","e","Easy","9km","9km easy trail.",""],
+  ["Sat 15 Aug","l","Long Run","24km","24km — push past the 21km barrier before race day.","A psychological milestone. Respect it."],
+  ["Sun 16 Aug","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 17 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 18 Aug","e","Easy","9km","9km easy.",""],
+  ["Wed 19 Aug","q","Hill Reps + Str A","9km","8x3min or 6x4min hill reps. Strength A after.","The difference from Week 3 should be noticeable.",1],
  ]},
- {n:7,ph:"Specific",lb:"Peak Week",tot:"~58km",tof:"~9–11h",rng:"19–25 Aug",blk:"30km Block",days:[
-  ["Mon 19 Aug","d","Rest","","Rest.",""],
-  ["Tue 20 Aug","e","Easy","8km","8km easy.",""],
-  ["Wed 21 Aug","q","Race Sim + Str A","12km","12km at race effort (7–8/10) with full race nutrition. Strength A evening.","Most race-specific session of the block.",1],
-  ["Thu 22 Aug","e","Easy","6km","6km easy.",""],
-  ["Fri 23 Aug","s","Strength B","","Strength B — 25–30min.","",0,1],
-  ["Sat 24 Aug","l","Peak Long Run","26–28km","26–28km peak long run. Conservative first half, survive the second.","Most important session of the block. Finish is the only metric."],
-  ["Sun 25 Aug","e","Shakeout","6km","6km easy shakeout.",""],
+ {n:7,ph:"Specific",lb:"Peak Week",tot:"~57km",tof:"~9–11h",rng:"20–26 Aug",blk:"30km Block",days:[
+  ["Thu 20 Aug","d","Rest","","Rest.",""],
+  ["Fri 21 Aug","e","Easy","8km","8km easy.",""],
+  ["Sat 22 Aug","l","Peak Long Run","26–28km","26-28km peak long run. Conservative first half, survive the second.","Most important session of the block. Finish is the only metric."],
+  ["Sun 23 Aug","e","Easy","6km","6km easy shakeout.",""],
+  ["Mon 24 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 25 Aug","e","Easy","9km","9km easy.",""],
+  ["Wed 26 Aug","q","Race Sim + Str A","12km","12km at race effort (7-8/10) with full race nutrition. Strength A after.","Most race-specific session of the block.",1],
  ]},
- {n:8,ph:"Recovery",lb:"Down Week",tot:"~36km",tof:"~4h 30m",rng:"26 Aug – 1 Sep",blk:"30km Block",days:[
-  ["Mon 26 Aug","d","Rest","","Rest.",""],
-  ["Tue 27 Aug","e","Easy","7km","7km easy.",""],
-  ["Wed 28 Aug","q","Moderate + Str A","8km","8km with 3×10min moderate. Strength A at 60–70%.","Huge stimulus absorbed — let it rebuild.",1],
-  ["Thu 29 Aug","e","Easy","6km","6km easy.",""],
-  ["Fri 30 Aug","d","Rest","","Rest. One strength session this week.",""],
-  ["Sat 31 Aug","l","Long Run","15km","15km easy. No heroics.",""],
-  ["Sun 1 Sep","d","Rest","","Rest.",""],
+ {n:8,ph:"Recovery",lb:"Down Week",tot:"~35km",tof:"~4h 30m",rng:"27 Aug – 2 Sep",blk:"30km Block",days:[
+  ["Thu 27 Aug","d","Rest","","Rest.",""],
+  ["Fri 28 Aug","e","Easy","7km","7km easy.",""],
+  ["Sat 29 Aug","l","Long Run","15km","15km easy. No heroics.",""],
+  ["Sun 30 Aug","e","Easy","6km","6km easy.",""],
+  ["Mon 1 Sep","d","Rest","","Rest. One strength session this week.",""],
+  ["Tue 2 Sep","e","Easy","7km","7km easy.",""],
+  ["Wed 3 Sep","q","Moderate + Str A","8km","8km with 3x10min moderate. Strength A at 60-70%.","Huge stimulus absorbed — let it rebuild.",1],
  ]},
- {n:9,ph:"Taper",lb:"Sharpen Up",tot:"~42km",tof:"~5h 30m",rng:"2–8 Sep",blk:"30km Block",days:[
-  ["Mon 2 Sep","d","Rest","","Rest.",""],
-  ["Tue 3 Sep","e","Easy","8km","8km easy.",""],
-  ["Wed 4 Sep","q","Quality","10km","10km with 2×15min at race effort. Strength A at 50%.","Maintaining fitness while body recovers.",1],
-  ["Thu 5 Sep","e","Easy","6km","6km easy.",""],
-  ["Fri 6 Sep","d","Rest","","Rest.",""],
-  ["Sat 7 Sep","l","Last Long Run","18km","18km easy. Comfortable and confident.","You're fit. This is just a reminder."],
-  ["Sun 8 Sep","d","Rest","","Rest.",""],
+ {n:9,ph:"Taper",lb:"Sharpen Up",tot:"~40km",tof:"~5h",rng:"4–10 Sep",blk:"30km Block",days:[
+  ["Thu 4 Sep","d","Rest","","Rest.",""],
+  ["Fri 5 Sep","e","Easy","8km","8km easy.",""],
+  ["Sat 6 Sep","l","Last Long Run","16km","16km easy. Comfortable and confident.","You are fit. This is just a reminder."],
+  ["Sun 7 Sep","e","Easy","6km","6km easy.",""],
+  ["Mon 8 Sep","d","Rest","","Rest.",""],
+  ["Tue 9 Sep","e","Easy","8km","8km easy.",""],
+  ["Wed 10 Sep","q","Quality","10km","10km with 2x15min at race effort. Strength A at 50%.","Maintaining fitness while body recovers.",1],
  ]},
- {n:10,ph:"Taper",lb:"Race Week",tot:"~15km",tof:"~2h",rng:"9–13 Sep",blk:"30km Block",days:[
-  ["Mon 9 Sep","d","Rest","","Rest.","Final week. Trust everything you've built."],
-  ["Tue 10 Sep","e","Easy + Strides","6km","6km easy with 4×1min pickups.","Reminding your legs what fast feels like."],
-  ["Wed 11 Sep","e","Very Easy","5km","5km very easy.",""],
-  ["Thu 12 Sep","d","Rest","","Rest. Gear check. Sleep.","Lay out all kit. Charge watch. Prep nutrition."],
-  ["Fri 12 Sep","e","Shakeout","4km","4km easy shakeout, 6–8 strides.","Light on the feet. Sharp in the mind."],
-  ["Sat 13 Sep","r","Race Day","30km","30km Trail Race — Race Day.","10 weeks in your legs. Start conservatively. Fuel early. Enjoy it."],
+ {n:10,ph:"Taper",lb:"Race Week",tot:"~15km",tof:"~2h",rng:"11–13 Sep",blk:"30km Block",days:[
+  ["Thu 11 Sep","d","Rest","","Rest. Gear check.","Lay out all kit. Charge watch. Prep nutrition."],
+  ["Fri 12 Sep","e","Easy + Strides","5km","5km easy with 4x1min pickups.","Light on the feet. Sharp in the mind."],
+  ["Sat 13 Sep","r","Race Day","30km","30km Trail Race — Race Day.","Everything you have built is in your legs. Start conservatively. Fuel early. Enjoy it."],
   ["Sun 14 Sep","d","Rest","","Rest.",""],
- ]},
- {n:11,ph:"Recovery",lb:"Post-Race Rest",tot:"~20km",tof:"~2h 30m",rng:"15–21 Sep",blk:"Recovery",days:[
-  ["Mon 15 Sep","d","Rest","","Complete rest.","Race takes more than you realise on the day."],
+  ["Mon 15 Sep","d","Rest","","Rest.",""],
   ["Tue 16 Sep","d","Rest","","Rest.",""],
-  ["Wed 17 Sep","e","Walk/Easy","4km","Easy walk or gentle jog only if legs feel ready.","Any soreness — walk only."],
-  ["Thu 18 Sep","d","Rest","","Rest.",""],
-  ["Fri 19 Sep","e","Easy","6km","6km easy, flat.","4–5/10 maximum."],
-  ["Sat 20 Sep","e","Easy","8km","8km easy — one gentle MacRitchie loop.","No pressure on pace or time."],
+  ["Wed 17 Sep","d","Rest","","Rest.",""],
+ ]},
+ {n:11,ph:"Recovery",lb:"Post-Race Rest",tot:"~20km",tof:"~2h 30m",rng:"18–24 Sep",blk:"Recovery",days:[
+  ["Thu 18 Sep","d","Rest","","Complete rest.","Race takes more than you realise on the day."],
+  ["Fri 19 Sep","d","Rest","","Rest.",""],
+  ["Sat 20 Sep","e","Walk/Easy","4km","Easy walk or very gentle jog only if legs feel ready.","Any soreness — walk only."],
   ["Sun 21 Sep","d","Rest","","Rest.",""],
- ]},
- {n:12,ph:"Recovery",lb:"Rebuild Base",tot:"~30km",tof:"~3h 45m",rng:"22–28 Sep",blk:"Recovery",days:[
   ["Mon 22 Sep","d","Rest","","Rest.",""],
-  ["Tue 23 Sep","e","Easy","8km","8km easy trail.",""],
-  ["Wed 24 Sep","q","Moderate + Str A","8km","8km easy to moderate. Strength A at 60%.","Ease back in gently.",1],
-  ["Thu 25 Sep","e","Easy","6km","6km easy.",""],
-  ["Fri 26 Sep","s","Strength B","","Strength B — 60% load.","",0,1],
+  ["Tue 23 Sep","e","Easy","6km","6km easy, flat.","4-5/10 maximum."],
+  ["Wed 24 Sep","e","Easy","8km","8km easy — one gentle MacRitchie loop.","No pressure on pace or time."],
+ ]},
+ {n:12,ph:"Recovery",lb:"Rebuild Base",tot:"~32km",tof:"~3h 45m",rng:"25 Sep – 1 Oct",blk:"Recovery",days:[
+  ["Thu 25 Sep","d","Rest","","Rest.",""],
+  ["Fri 26 Sep","e","Easy","8km","8km easy trail.",""],
   ["Sat 27 Sep","l","Easy Long","14km","14km easy long run.","Rebuilding, not racing."],
-  ["Sun 28 Sep","d","Rest","","Rest.",""],
+  ["Sun 28 Sep","e","Easy","6km","6km easy.",""],
+  ["Mon 29 Sep","s","Strength B","","Strength B — 60% load.","",0,1],
+  ["Tue 30 Sep","e","Easy","7km","7km easy.",""],
+  ["Wed 1 Oct","q","Moderate + Str A","8km","8km easy to moderate. Strength A at 60%.","Ease back in gently.",1],
  ]},
- {n:13,ph:"Build",lb:"40km Foundation",tot:"~48km",tof:"~6h 30m",rng:"29 Sep – 5 Oct",blk:"40km Block",days:[
-  ["Mon 29 Sep","d","Rest","","Rest.",""],
-  ["Tue 30 Sep","e","Easy","9km","9km easy trail.",""],
-  ["Wed 1 Oct","q","Quality + Str A","10km","10km with 3×15min moderate. Strength A evening.","Start of the 40km block.",1],
-  ["Thu 2 Oct","e","Easy","7km","7km easy.",""],
-  ["Fri 3 Oct","s","Strength B","","Strength B — full load.","",0,1],
+ {n:13,ph:"Build",lb:"40km Foundation",tot:"~48km",tof:"~6h 30m",rng:"2–8 Oct",blk:"40km Block",days:[
+  ["Thu 2 Oct","d","Rest","","Rest.",""],
+  ["Fri 3 Oct","e","Easy","9km","9km easy trail.",""],
   ["Sat 4 Oct","l","Long Run","20km","20km — two MacRitchie loops.","Your new baseline."],
-  ["Sun 5 Oct","e","Shakeout","6km","6km easy shakeout.",""],
+  ["Sun 5 Oct","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 6 Oct","s","Strength B","","Strength B — full load.","",0,1],
+  ["Tue 7 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 8 Oct","q","Quality + Str A","10km","10km with 3x15min moderate. Strength A after.","Start of the 40km block.",1],
  ]},
- {n:14,ph:"Build",lb:"Extend Long Run",tot:"~52km",tof:"~7h",rng:"6–12 Oct",blk:"40km Block",days:[
-  ["Mon 6 Oct","d","Rest","","Rest.",""],
-  ["Tue 7 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Wed 8 Oct","q","Hill Reps + Str A","10km","8×3min or 6×4min hill reps. Strength A evening.","",1],
-  ["Thu 9 Oct","e","Easy","7km","7km easy.",""],
-  ["Fri 10 Oct","s","Strength B","","Strength B.","",0,1],
+ {n:14,ph:"Build",lb:"Extend Long Run",tot:"~52km",tof:"~7h",rng:"9–15 Oct",blk:"40km Block",days:[
+  ["Thu 9 Oct","d","Rest","","Rest.",""],
+  ["Fri 10 Oct","e","Easy","9km","9km easy trail.",""],
   ["Sat 11 Oct","l","Long Run","24km","24km — back past the 21km barrier again.","More manageable than before the 30km race."],
-  ["Sun 12 Oct","e","Shakeout","6km","6km easy.",""],
+  ["Sun 12 Oct","e","Easy","7km","7km easy.",""],
+  ["Mon 13 Oct","s","Strength B","","Strength B.","",0,1],
+  ["Tue 14 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 15 Oct","q","Hill Reps + Str A","10km","8x3min or 6x4min hill reps. Strength A after.","",1],
  ]},
- {n:15,ph:"Specific",lb:"Three-Loop Target",tot:"~55km",tof:"~8–9h",rng:"13–19 Oct",blk:"40km Block",days:[
-  ["Mon 13 Oct","d","Rest","","Rest.",""],
-  ["Tue 14 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Wed 15 Oct","q","Race Sim + Str A","12km","12km sustained with full nutrition protocol. Strength A evening.","Practise your 40km nutrition strategy here.",1],
-  ["Thu 16 Oct","e","Easy","7km","7km easy.",""],
-  ["Fri 17 Oct","s","Strength B","","Strength B.","",0,1],
+ {n:15,ph:"Specific",lb:"Three-Loop Target",tot:"~55km",tof:"~8–9h",rng:"16–22 Oct",blk:"40km Block",days:[
+  ["Thu 16 Oct","d","Rest","","Rest.",""],
+  ["Fri 17 Oct","e","Easy","9km","9km easy trail.",""],
   ["Sat 18 Oct","l","Three-Loop Run","30km","30km — three MacRitchie loops. First time at 40km effort equivalent.","Fuel every 40min. The psychological breakthrough of the 40km block."],
-  ["Sun 19 Oct","e","Shakeout","7km","7km easy shakeout.",""],
+  ["Sun 19 Oct","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 20 Oct","s","Strength B","","Strength B.","",0,1],
+  ["Tue 21 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 22 Oct","q","Race Sim + Str A","12km","12km sustained with full nutrition protocol. Strength A after.","Practise your 40km nutrition strategy here.",1],
  ]},
- {n:16,ph:"Recovery",lb:"Down Week",tot:"~38km",tof:"~4h 45m",rng:"20–26 Oct",blk:"40km Block",days:[
-  ["Mon 20 Oct","d","Rest","","Rest.",""],
-  ["Tue 21 Oct","e","Easy","8km","8km easy.",""],
-  ["Wed 22 Oct","q","Moderate + Str A","8km","8km moderate. Strength A at 70%.","",1],
-  ["Thu 23 Oct","e","Easy","6km","6km easy.",""],
-  ["Fri 24 Oct","d","Rest","","Rest. One strength session this week.",""],
+ {n:16,ph:"Recovery",lb:"Down Week",tot:"~38km",tof:"~4h 45m",rng:"23–29 Oct",blk:"40km Block",days:[
+  ["Thu 23 Oct","d","Rest","","Rest.",""],
+  ["Fri 24 Oct","e","Easy","8km","8km easy.",""],
   ["Sat 25 Oct","l","Long Run","16km","16km easy. Pull back deliberately.","Let the three-loop effort absorb."],
-  ["Sun 26 Oct","d","Rest","","Rest.",""],
+  ["Sun 26 Oct","e","Easy","6km","6km easy.",""],
+  ["Mon 27 Oct","d","Rest","","Rest. One strength session this week.",""],
+  ["Tue 28 Oct","e","Easy","8km","8km easy.",""],
+  ["Wed 29 Oct","q","Moderate + Str A","8km","8km moderate. Strength A at 70%.","",1],
  ]},
- {n:17,ph:"Specific",lb:"Peak 40km Prep",tot:"~60km",tof:"~10–12h",rng:"27 Oct – 2 Nov",blk:"40km Block",days:[
-  ["Mon 27 Oct","d","Rest","","Rest.",""],
-  ["Tue 28 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Wed 29 Oct","q","Quality + Str A","12km","12km sustained. Practise eating through fatigue. Strength A evening.","Fuelling when you don't feel like it is a skill.",1],
-  ["Thu 30 Oct","e","Easy","7km","7km easy.",""],
-  ["Fri 31 Oct","s","Strength B","","Strength B.","",0,1],
-  ["Sat 1 Nov","l","Peak Long Run","32–35km","32–35km peak long run. Time on feet: 5.5–7h.","Longest run of the year. This run makes December possible."],
-  ["Sun 2 Nov","e","Shakeout","7km","7km easy shakeout within 24hrs.","Training your legs for what km 32–40 feels like."],
+ {n:17,ph:"Specific",lb:"Peak 40km Prep",tot:"~59km",tof:"~10–12h",rng:"30 Oct – 5 Nov",blk:"40km Block",days:[
+  ["Thu 30 Oct","d","Rest","","Rest.",""],
+  ["Fri 31 Oct","e","Easy","9km","9km easy trail.",""],
+  ["Sat 1 Nov","l","Peak Long Run","32–35km","32-35km peak long run. Time on feet: 5.5-7h.","Longest run of the year. This run makes December possible."],
+  ["Sun 2 Nov","e","Easy","7km","7km easy shakeout within 24hrs.","Training your legs for what km 32-40 feels like."],
+  ["Mon 3 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 4 Nov","e","Easy","9km","9km easy.",""],
+  ["Wed 5 Nov","q","Quality + Str A","12km","12km sustained. Practise eating through fatigue. Strength A after.","Fuelling when you don't feel like it is a skill.",1],
  ]},
- {n:18,ph:"Recovery",lb:"Consolidation",tot:"~40km",tof:"~5h",rng:"3–9 Nov",blk:"40km Block",days:[
-  ["Mon 3 Nov","d","Rest","","Rest.",""],
-  ["Tue 4 Nov","e","Easy","8km","8km easy.",""],
-  ["Wed 5 Nov","q","Moderate + Str A","9km","9km moderate. Strength A at 70%.","",1],
-  ["Thu 6 Nov","e","Easy","7km","7km easy.",""],
-  ["Fri 7 Nov","s","Strength B","","Strength B.","",0,1],
+ {n:18,ph:"Recovery",lb:"Consolidation",tot:"~40km",tof:"~5h",rng:"6–12 Nov",blk:"40km Block",days:[
+  ["Thu 6 Nov","d","Rest","","Rest.",""],
+  ["Fri 7 Nov","e","Easy","8km","8km easy.",""],
   ["Sat 8 Nov","l","Long Run","18km","18km easy. Recovery long run.","Should feel manageable after last week."],
-  ["Sun 9 Nov","d","Rest","","Rest.",""],
+  ["Sun 9 Nov","e","Easy","7km","7km easy.",""],
+  ["Mon 10 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 11 Nov","e","Easy","8km","8km easy.",""],
+  ["Wed 12 Nov","q","Moderate + Str A","9km","9km moderate. Strength A at 70%.","",1],
  ]},
- {n:19,ph:"Build",lb:"Final Build",tot:"~50km",tof:"~6h 30m",rng:"10–16 Nov",blk:"Goal Prep",days:[
-  ["Mon 10 Nov","d","Rest","","Rest.",""],
-  ["Tue 11 Nov","e","Easy","9km","9km easy trail.",""],
-  ["Wed 12 Nov","q","Quality + Str A","10km","10km with 4×10min sustained. Strength A evening.","",1],
-  ["Thu 13 Nov","e","Easy","7km","7km easy.",""],
-  ["Fri 14 Nov","s","Strength B","","Strength B.","",0,1],
+ {n:19,ph:"Build",lb:"Final Build",tot:"~50km",tof:"~6h 30m",rng:"13–19 Nov",blk:"Goal Prep",days:[
+  ["Thu 13 Nov","d","Rest","","Rest.",""],
+  ["Fri 14 Nov","e","Easy","9km","9km easy trail.",""],
   ["Sat 15 Nov","l","Long Run","26km","26km — two and a half loops if possible.","Sharpening, not building."],
-  ["Sun 16 Nov","e","Shakeout","6km","6km easy.",""],
+  ["Sun 16 Nov","e","Easy","7km","7km easy.",""],
+  ["Mon 17 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 18 Nov","e","Easy","9km","9km easy.",""],
+  ["Wed 19 Nov","q","Quality + Str A","10km","10km with 4x10min sustained. Strength A after.","",1],
  ]},
- {n:20,ph:"Taper",lb:"Pre-Goal Taper",tot:"~42km",tof:"~5h",rng:"17–23 Nov",blk:"Goal Prep",days:[
-  ["Mon 17 Nov","d","Rest","","Rest.",""],
-  ["Tue 18 Nov","e","Easy","8km","8km easy.",""],
-  ["Wed 19 Nov","q","Quality","10km","10km with 2×15min at goal effort. Strength A at 50%.","Keep legs sharp. Trust the training.",1],
-  ["Thu 20 Nov","e","Easy","6km","6km easy.",""],
-  ["Fri 21 Nov","d","Rest","","Rest.",""],
-  ["Sat 22 Nov","l","Last Long Run","18km","18km easy. Comfortable and confident.","You're ready."],
-  ["Sun 23 Nov","d","Rest","","Rest.",""],
- ]},
- {n:21,ph:"Taper",lb:"Goal Week Prep",tot:"~15km",tof:"~1h 45m",rng:"24–30 Nov",blk:"Goal Prep",days:[
+ {n:20,ph:"Taper",lb:"Pre-Goal Taper",tot:"~40km",tof:"~5h",rng:"20–26 Nov",blk:"Goal Prep",days:[
+  ["Thu 20 Nov","d","Rest","","Rest.",""],
+  ["Fri 21 Nov","e","Easy","8km","8km easy.",""],
+  ["Sat 22 Nov","l","Last Long Run","18km","18km easy. Comfortable and confident.","You are ready."],
+  ["Sun 23 Nov","e","Easy","6km","6km easy.",""],
   ["Mon 24 Nov","d","Rest","","Rest.",""],
-  ["Tue 25 Nov","e","Easy + Strides","6km","6km easy with 4×1min pickups.",""],
-  ["Wed 26 Nov","e","Very Easy","5km","5km very easy.",""],
+  ["Tue 25 Nov","e","Easy","8km","8km easy.",""],
+  ["Wed 26 Nov","q","Quality","10km","10km with 2x15min at goal effort. Strength A at 50%.","Keep legs sharp. Trust the training.",1],
+ ]},
+ {n:21,ph:"Taper",lb:"Goal Week Prep",tot:"~15km",tof:"~1h 45m",rng:"27 Nov – 3 Dec",blk:"Goal Prep",days:[
   ["Thu 27 Nov","d","Rest","","Rest. Gear prep. Route planning.","Plan nutrition drops and pacer points."],
-  ["Fri 28 Nov","e","Shakeout","4km","4km very easy, 6 strides.",""],
-  ["Sat 29 Nov","d","Rest","","Rest. Sleep well.",""],
-  ["Sun 30 Nov","d","Rest","","Rest.",""],
+  ["Fri 28 Nov","e","Easy + Strides","6km","6km easy with 4x1min pickups.",""],
+  ["Sat 29 Nov","e","Very Easy","5km","5km very easy.",""],
+  ["Sun 30 Nov","d","Rest","","Rest. Sleep well.",""],
+  ["Mon 1 Dec","d","Rest","","Rest.",""],
+  ["Tue 2 Dec","e","Shakeout","4km","4km very easy, 6 strides.","Light on the legs. Sharp in the mind."],
+  ["Wed 3 Dec","d","Rest","","Rest. Everything is ready.",""],
  ]},
  {n:22,ph:"Goal",lb:"40km Attempt",tot:"40km",tof:"7–10h",rng:"Dec (TBC)",blk:"Goal",days:[
-  ["Mon 1 Dec","d","Rest","","Rest. Final preparation.","Everything is already in your legs."],
-  ["Tue 2 Dec","e","Very Easy","4km","4km very easy shakeout only.",""],
-  ["Wed 3 Dec","d","Rest","","Rest.",""],
-  ["Thu 4 Dec","d","Rest","","Rest.",""],
-  ["Fri 5 Dec","d","Rest","","Rest. Everything is ready.",""],
+  ["Thu 4 Dec","d","Rest","","Rest. Final preparation.","Everything is already in your legs."],
+  ["Fri 5 Dec","e","Very Easy","4km","4km very easy shakeout only.",""],
   ["Sat 6 Dec","g","40km Goal","40km","4 Loops of MacRitchie — 40km Goal Attempt.","5 months in your legs. Start conservatively. Fuel every 40min. Walk climbs from loop 3. Pacer joins at loop 3."],
   ["Sun 7 Dec","d","Rest","","Rest. Celebrate.","You just ran 40km."],
+  ["Mon 8 Dec","d","Rest","","Rest.",""],
+  ["Tue 9 Dec","d","Rest","","Rest.",""],
+  ["Wed 10 Dec","d","Rest","","Rest.",""],
  ]},
 ];
-
 const ALL=W.flatMap(w=>w.days.map(d=>({
   day:d[0],type:d[1],tag:d[2],km:d[3],session:d[4],note:d[5],
   sA:d[6]||0,sB:d[7]||0,
@@ -716,7 +762,7 @@ function mo(s){
   if(s.includes('Nov'))return'November 2026';if(s.includes('Dec'))return'December 2026';
   return'Other';
 }
-const SD={'July 2026':10,'August 2026':5,'September 2026':1,'October 2026':3,'November 2026':6,'December 2026':1};
+const SD={'July 2026':10,'August 2026':5,'September 2026':6,'October 2026':4,'November 2026':6,'December 2026':4};
 
 function rPhase(){
   const segs=[{l:'30km Block',s:'Wks 1–10',i:0},{l:'Recovery',s:'Wks 11–12',i:10},
@@ -747,7 +793,32 @@ function rMonth(){
   ALL.forEach(d=>{const m=mo(d.day);if(!months[m])months[m]=[];months[m].push(d);});
   let h='';
   Object.entries(months).forEach(([m,days])=>{
-    h+=`<div class="mblock"><div class="mhd"><div class="mname">${m}</div><div class="mcnt">${days.filter(d=>d.km).length} active days</div></div><div class="mgrid">`;
+    const mLogs=gl();
+    const mDone=days.filter(function(d){return mLogs[dk(d)]&&mLogs[dk(d)].st==='d';}).length;
+    const mActive=days.filter(function(d){return d.km;}).length;
+    const mLoggedKm=days.reduce(function(sum,d){
+      return sum+(mLogs[dk(d)]&&mLogs[dk(d)].ad?parseFloat(mLogs[dk(d)].ad):0);
+    },0);
+    // Planned km for month — sum numeric km values
+    const mPlanKm=days.reduce(function(sum,d){
+      var v=d.km?parseFloat(d.km.replace(/[^0-9.]/g,'').split('–')[0]):0;
+      return sum+(isNaN(v)?0:v);
+    },0);
+    // Planned time for month — count run days as rough estimate
+    const mLoggedMins=days.reduce(function(sum,d){
+      var t=mLogs[dk(d)]&&mLogs[dk(d)].at?mLogs[dk(d)].at:'';
+      if(!t)return sum;
+      var h=t.match(/(\d+)h/);var mn=t.match(/(\d+)m/);
+      return sum+(h?parseInt(h[1])*60:0)+(mn?parseInt(mn[1]):0);
+    },0);
+    function minsH(m){var h=Math.floor(m/60);var mn=m%60;return h>0?h+'h'+(mn?' '+mn+'m':''):mn+'m';}
+    let mSummary=mActive+' active days';
+    if(mDone>0){
+      mSummary=mDone+'/'+mActive+' done';
+      mSummary+=' · '+(mLoggedKm>0?mLoggedKm.toFixed(1):'0')+'/'+(mPlanKm>0?mPlanKm.toFixed(0):'?')+'km';
+      mSummary+=' · '+(mLoggedMins>0?minsH(mLoggedMins):'0m')+' on feet';
+    }
+    h+=`<div class="mblock"><div class="mhd"><div class="mname">${m}</div><div class="mcnt">${mSummary}</div></div><div class="mgrid">`;
     ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(x=>h+=`<div class="dh">${x}</div>`);
     for(let i=0;i<(SD[m]||0);i++)h+=`<div class="mc emp"></div>`;
     days.forEach(day=>{
@@ -755,7 +826,7 @@ function rMonth(){
       const log=logs[dk(day)];
       const vc=log?.st==='d'?' vd':log?.st==='s'?' vs':log?.st==='p'?' vp':'';
       const t=gt(day.type,day.km);
-      h+=`<div class="mc ${TC[day.type]||'td'}${vc}" onclick="jDay(${idx})">
+      h+=`<div class="mc ${TC[day.type]||'td'}${vc}" onclick="jDay(${idx},'month')">
         <div class="cn">${dn(day.day)}</div>
         <div class="ct">${day.tag}</div>
         ${t?`<div class="ck">${t}</div>`:day.km?`<div class="ck">${day.km}</div>`:''}
@@ -771,7 +842,42 @@ function rWeek(){
   document.getElementById('wh').textContent=`Week ${w.n} — ${w.lb}`;
   document.getElementById('wm').textContent=w.rng;
   document.getElementById('wb').textContent=w.blk;
-  document.getElementById('wv').textContent=`${w.tot} · ${w.tof} on feet`;
+  const wLogs=gl();
+  const wDays=w.days.map(function(d){return ALL.find(function(a){return a.day===d[0];});}).filter(Boolean);
+  const doneCount=wDays.filter(function(d){return wLogs[dk(d)]&&wLogs[dk(d)].st==='d';}).length;
+  const totalSess=wDays.filter(function(d){return d[1]!=='d';}).length;
+  const loggedKm=wDays.reduce(function(sum,d){
+    const v=wLogs[dk(d)]&&wLogs[dk(d)].ad?parseFloat(wLogs[dk(d)].ad):0;
+    return sum+v;
+  },0);
+  // Parse planned total km (strip non-numeric prefix like ~)
+  const planKm=parseFloat((w.tot||'0').replace(/[^0-9.]/g,''))||0;
+  // Parse planned tof to a display string like "3–4h"
+  const planTof=w.tof||'';
+  // Build actual time string from logs
+  const loggedTimeArr=wDays.map(function(d){
+    return wLogs[dk(d)]&&wLogs[dk(d)].at?wLogs[dk(d)].at:'';
+  }).filter(Boolean);
+  // Convert logged times to total minutes for display
+  function toMins(str){
+    if(!str)return 0;
+    var h=str.match(/(\d+)h/);var m=str.match(/(\d+)m/);
+    return(h?parseInt(h[1])*60:0)+(m?parseInt(m[1]):0);
+  }
+  const totalMins=loggedTimeArr.reduce(function(s,t){return s+toMins(t);},0);
+  function minsToStr(m){
+    if(m<=0)return'0m';
+    var h=Math.floor(m/60);var mn=m%60;
+    return h>0?h+'h'+(mn>0?' '+mn+'m':''):mn+'m';
+  }
+  const actualTimeStr=minsToStr(totalMins);
+  let wSummary=(planKm>0?'~'+planKm+'km':w.tot)+' · '+planTof+' on feet';
+  if(doneCount>0){
+    wSummary=doneCount+'/'+totalSess+' done';
+    wSummary+=' · '+(loggedKm>0?loggedKm.toFixed(1):'0')+'/'+(planKm>0?planKm:'?')+'km';
+    wSummary+=' · '+(totalMins>0?actualTimeStr:'0m')+'/'+(planTof||'?')+' on feet';
+  }
+  document.getElementById('wv').textContent=wSummary;
   const logs=gl();
   document.getElementById('wcols').innerHTML=w.days.map(day=>{
     const idx=ALL.findIndex(d=>d.day===day[0]);
@@ -779,7 +885,7 @@ function rWeek(){
     const wc=log?.st==='d'?' wd':log?.st==='s'?' ws':log?.st==='p'?' wp':'';
     const t=gt(day[1],day[3]);
     const isMob=window.innerWidth<=680;
-    return`<div class="wc ${TC[day[1]]||'td'}${wc}" onclick="jDay(${idx})">
+    return`<div class="wc ${TC[day[1]]||'td'}${wc}" onclick="jDay(${idx},'month')">
       <div class="wcday">${day[0].split(' ')[0]} ${isMob?dn(day[0]):''}</div>
       ${!isMob?`<div class="wcdate">${dn(day[0])}</div>`:''}
       <div class="wctype">${day[2]}</div>
@@ -791,27 +897,104 @@ function rWeek(){
 
 function cw(dir){cW=Math.max(0,Math.min(W.length-1,cW+dir));rWeek();}
 
+let mobExpanded=false;
+
+function isMobile(){return window.innerWidth<=680;}
+
 function rSidebar(idx){
   sD=idx;
-  const logs=gl();
-  document.getElementById('dsb').innerHTML=ALL.map((day,i)=>{
-    const log=logs[dk(day)];
-    const ic=log?.st==='d'?'✓':log?.st==='s'?'–':log?.st==='p'?'◑':'';
-    const icol=log?.st==='d'?'var(--ec)':log?.st==='p'?'var(--qc)':'var(--dc)';
-    return`<div class="drow${i===idx?' sel':''}" onclick="selD(${i})">
-      <div class="drp" style="background:${COL[day.type]||'#888'}"></div>
-      <div class="dri"><div class="drd">${day.day}</div><div class="drt">${day.tag}${day.km?' · '+day.km:''}</div></div>
-      <div class="drs" style="color:${icol}">${ic}</div>
-    </div>`;
-  }).join('');
+  mobExpanded=false;
+  renderSidebarItems(idx);
   rPanel(idx);
-  setTimeout(()=>{const r=document.querySelectorAll('.drow');if(r[idx])r[idx].scrollIntoView({block:'nearest'});},50);
+  // On mobile scroll to top of panel instead of sidebar
+  if(isMobile()){
+    setTimeout(()=>{
+      const panel=document.getElementById('dpanel');
+      if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+  } else {
+    setTimeout(()=>{const r=document.querySelectorAll('.drow:not(.mob-hidden)');if(r[0])r[0].scrollIntoView({block:'nearest'});},50);
+  }
+}
+
+function renderSidebarItems(idx){
+  const logs=gl();
+  const mob=window.innerWidth<=680;
+  const sb=document.getElementById('dsb');
+  if(!sb)return;
+
+  const visStart=Math.max(0,idx-1);
+  const visEnd=Math.min(ALL.length-1,idx+1);
+
+  // Clear and rebuild
+  sb.innerHTML='';
+
+  ALL.forEach(function(day,i){
+    const log=logs[dk(day)]||{};
+    const ic=log.st==='d'?'✓':log.st==='s'?'–':log.st==='p'?'◑':'';
+    const icol=log.st==='d'?'var(--ec)':log.st==='p'?'var(--qc)':'var(--dc)';
+
+    const el=document.createElement('div');
+    el.className='drow'+(i===idx?' sel':'');
+
+    // On mobile: hide via inline style (more reliable than CSS class)
+    if(mob&&!mobExpanded&&(i<visStart||i>visEnd)){
+      el.style.display='none';
+    }
+
+    el.innerHTML=
+      '<div class="drp" style="background:'+(COL[day.type]||'#888')+'"></div>'+
+      '<div class="dri">'+
+        '<div class="drd">'+day.day+'</div>'+
+        '<div class="drt">'+day.tag+(day.km?' · '+day.km:'')+'</div>'+
+      '</div>'+
+      '<div class="drs" style="color:'+icol+'">'+ic+'</div>';
+    el.onclick=function(){selD(i);};
+    sb.appendChild(el);
+  });
+
+  // Expand/collapse button on mobile
+  if(mob){
+    const btn=document.createElement('button');
+    btn.className='mob-expand-btn';
+    btn.textContent=mobExpanded?'▲ Show fewer days':'↕ Browse all '+ALL.length+' days';
+    btn.onclick=function(){toggleMobExpand(idx);};
+    sb.appendChild(btn);
+  }
+
+  // On desktop: scroll selected into view
+  if(!mob){
+    setTimeout(function(){
+      const rows=sb.querySelectorAll('.drow');
+      if(rows[idx])rows[idx].scrollIntoView({block:'nearest'});
+    },50);
+  }
+}
+
+
+function toggleMobExpand(idx){
+  mobExpanded=!mobExpanded;
+  renderSidebarItems(idx);
+  // If expanding, scroll to the selected item
+  if(mobExpanded){
+    setTimeout(()=>{
+      const rows=document.querySelectorAll('.drow');
+      if(rows[idx])rows[idx].scrollIntoView({behavior:'smooth',block:'center'});
+    },50);
+  }
 }
 
 function selD(idx){
   sD=idx;
-  document.querySelectorAll('.drow').forEach((r,i)=>r.classList.toggle('sel',i===idx));
+  mobExpanded=false; // collapse after selection on mobile
+  renderSidebarItems(idx);
   rPanel(idx);
+  if(isMobile()){
+    setTimeout(()=>{
+      const panel=document.getElementById('dpanel');
+      if(panel)panel.scrollIntoView({behavior:'smooth',block:'start'});
+    },80);
+  }
 }
 
 function rPanel(idx){
@@ -835,9 +1018,29 @@ function rPanel(idx){
     ${t?`<div><div class="dmv">${t}</div><div class="dml">Time on Feet</div></div>`:''}
   </div>`;
 
+  const bkLabel=dayNavSrc==='week'?'Back to Week':'Back to Month';
+  const bkId='backBtn_'+idx;
   document.getElementById('dpanel').innerHTML=`
-    <div class="dbc"><span>${day.wblk}</span><span class="sep">·</span><span>Week ${day.wn}</span><span class="sep">·</span><span>${day.wph}</span></div>
-    <div class="dcat" style="color:${col}">${day.tag}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="dbc" style="margin-bottom:0"><span>${day.wblk}</span><span class="sep">·</span><span>Week ${day.wn}</span><span class="sep">·</span><span>${day.wph}</span></div>
+      <button id="${bkId}" style="font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;background:transparent;border:1px solid var(--rule);cursor:pointer;color:var(--ink-m)">← ${bkLabel}</button>
+    </div>`;
+  // Bind back button after innerHTML set
+  const backEl=document.getElementById(bkId);
+  if(backEl){
+    backEl.onclick=function(){
+      if(dayNavSrc==='week'){jumpW(day.wn-1);}
+      else{sw('month',document.querySelectorAll('.tab')[0]);}
+    };
+  }
+  // Dummy element so innerHTML= continues cleanly
+  document.getElementById('dpanel').insertAdjacentHTML('beforeend','');
+  document.getElementById('dpanel').style.borderLeft='4px solid '+col;
+  document.getElementById('dpanel').insertAdjacentHTML('beforeend',`
+    <div class="dcat" style="display:flex;align-items:center;gap:7px">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};flex-shrink:0"></span>
+      <span style="color:${col}">${day.tag}</span>
+    </div>
     <div class="dh2">${day.day}</div>
     <div class="dby">BY CODY · ${day.wlb} · ${day.wrng}</div>
     <div class="drule"></div>
@@ -863,7 +1066,7 @@ function rPanel(idx){
         <button class="logsv" onclick="saveL(${idx})">Save Log</button>
         <span class="flash" id="fl${idx}">Saved</span>
       </div>
-    </div>`;
+    </div>`);
 
   document.querySelectorAll('.sthdr').forEach(h=>{
     h.onclick=function(){this.classList.toggle('op');this.nextElementSibling.classList.toggle('op');};
@@ -912,7 +1115,9 @@ async function saveL(idx){
   rStats();
 }
 
-function jDay(idx){
+let dayNavSrc='month';
+function jDay(idx,src){
+  dayNavSrc=src||'month';
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('act'));
   document.getElementById('dayView').classList.add('act');
@@ -1254,19 +1459,15 @@ async function handleStravaCallback(){
   const scope=params.get('scope');
   const error=params.get('error');
 
-  // Show error if Strava denied access
   if(error){
     window.history.replaceState({},'',window.location.pathname);
-    document.getElementById('stravaModalTitle').textContent='Strava Denied Access';
-    document.getElementById('stravaBody').innerHTML='<p style="font-size:13px;color:var(--rc);margin-bottom:12px">Strava returned: '+error+'</p>'
-      +'<button onclick="connectStrava()" style="background:#FC4C02;color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%">Try Again</button>';
-    document.getElementById('stravaModal').style.display='flex';
+    showStravaError('Strava denied access: '+error);
     return;
   }
 
   if(!code)return;
 
-  // Clean URL immediately so back button works cleanly
+  // Clean URL immediately
   window.history.replaceState({},'',window.location.pathname);
 
   updateStravaBtn(true,null);
@@ -1277,21 +1478,42 @@ async function handleStravaCallback(){
     const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code);
     const responseText=await res.text();
     let data;
-    try{data=JSON.parse(responseText);}catch{throw new Error('Function response not JSON: '+responseText.slice(0,100));}
-    if(!res.ok)throw new Error('Function error ('+res.status+'): '+JSON.stringify(data));
-    if(!data.access_token)throw new Error('No token. Strava said: '+JSON.stringify(data));
+    try{data=JSON.parse(responseText);}catch(je){
+      throw new Error('Function not JSON ('+res.status+'): '+responseText.slice(0,150));
+    }
+    if(!res.ok||!data.access_token){
+      // Surface the exact Strava error
+      const stravaErr=data.message||data.error||JSON.stringify(data);
+      throw new Error('Exchange failed ('+res.status+'): '+stravaErr);
+    }
     setStravaToken(data);
     updateStravaBtn(true, data.athlete&&data.athlete.firstname?data.athlete.firstname:null);
     setTimeout(showStravaActivities,300);
   }catch(e){
     console.error('Strava auth failed:',e.message);
     if(btn)btn.textContent='Connect Strava';
-    document.getElementById('stravaModalTitle').textContent='Connection Failed';
-    document.getElementById('stravaBody').innerHTML=''
-      +'<p style="font-size:11px;color:var(--rc);margin-bottom:12px;word-break:break-all">'+e.message+'</p>'
-      +'<button onclick="connectStrava()" style="background:#FC4C02;color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%">Try Again</button>';
-    document.getElementById('stravaModal').style.display='flex';
+    showStravaError(e.message);
   }
+}
+
+function showStravaError(msg){
+  const title=document.getElementById('stravaModalTitle');
+  const body=document.getElementById('stravaBody');
+  const modal=document.getElementById('stravaModal');
+  if(title)title.textContent='Connection Failed';
+  if(body){
+    body.innerHTML='';
+    const p=document.createElement('p');
+    p.style.cssText='font-size:12px;color:var(--rc);margin-bottom:14px;word-break:break-all;line-height:1.5';
+    p.textContent=msg;
+    body.appendChild(p);
+    const btn=document.createElement('button');
+    btn.style.cssText='background:#FC4C02;color:#fff;border:none;padding:11px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%';
+    btn.textContent='Try Again';
+    btn.onclick=connectStrava;
+    body.appendChild(btn);
+  }
+  if(modal)modal.style.display='flex';
 }
 
 function initStravaUI(){
