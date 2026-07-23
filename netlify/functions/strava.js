@@ -31,6 +31,8 @@ exports.handler = async (event) => {
     }
 
     try {
+      // redirect_uri must match exactly what was used during authorization
+      const redirect_uri = 'https://codystrainingplan.netlify.app/';
       const res = await fetch('https://www.strava.com/oauth/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -38,12 +40,20 @@ exports.handler = async (event) => {
           client_id: STRAVA_CLIENT_ID,
           client_secret: STRAVA_CLIENT_SECRET,
           code: code,
+          redirect_uri: redirect_uri,
           grant_type: 'authorization_code'
         })
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error('Strava: ' + JSON.stringify(data));
+      let data;
+      try { data = await res.json(); } catch(e) { data = { message: 'Non-JSON response' }; }
+      if (!res.ok) {
+        return {
+          statusCode: res.status,
+          headers,
+          body: JSON.stringify({ error: data.message || data.error || JSON.stringify(data) })
+        };
+      }
 
       return {
         statusCode: 200,
