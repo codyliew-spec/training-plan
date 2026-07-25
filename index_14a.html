@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Road to 40km</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃🏻</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=Archivo:wght@400;500;600&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0A0A0A;
+  --panel:#131312;
+  --panel-2:#1B1B19;
+  --bone:#F2F0EB;
+  --grey:#8C8C86;
+  --dim:#57574F;
+  --rule:#242422;
+  --signal:#FF3B14;
+
+  /* aliases kept so the original Strava + sync code styles correctly */
+  --ink:#F2F0EB; --ink-m:#8C8C86; --ink-d:#57574F;
+  --off:#131312; --ec:#F2F0EB; --rc:#FF3B14;
+
+  --fd:'Big Shoulders Display','Arial Narrow',sans-serif;
+  --fb:'Archivo',system-ui,-apple-system,sans-serif;
+  --fm:'Martian Mono','SFMono-Regular',ui-monospace,monospace;
+
+  --pad:18px;
+  --tabh:58px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--void);color:var(--bone);
+  font-family:var(--fb);font-size:14px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none;
+}
+button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer;text-align:left}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+.app{max-width:460px;margin:0 auto;min-height:100dvh;padding-bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px) + 8px)}
+@media(min-width:500px){body{background:#050505}.app{border-left:1px solid var(--rule);border-right:1px solid var(--rule)}}
+
+.mono{font-family:var(--fm);font-size:9px;font-weight:400;letter-spacing:.14em;text-transform:uppercase}
+.rule{height:1px;background:var(--rule)}
+
+/* ── status bar ── */
+.status{
+  position:sticky;top:0;z-index:30;background:var(--void);
+  padding:calc(env(safe-area-inset-top,0px) + 12px) var(--pad) 10px;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  border-bottom:1px solid var(--rule);
+}
+.status .mono{color:var(--grey)}
+#syncStatus{font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);flex:none}
+.status-actions{display:flex;gap:7px;min-width:0}
+.stbtn{
+  font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--grey);padding:6px 10px;border:1px solid var(--rule);white-space:nowrap;
+}
+.stbtn:active{background:var(--panel)}
+#stravaBtn{color:#FC4C02}
+
+/* ── week strip: the signature ── */
+.strip{padding:16px var(--pad) 0}
+.strip-cols{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.scol{display:flex;flex-direction:column;padding:0}
+.scol-bar{display:flex;align-items:flex-end;height:52px}
+.scol-bar i{width:100%;background:var(--grey);display:block;transition:background .15s}
+.scol-bar u{width:100%;height:2px;align-self:flex-end;background:var(--rule)}
+.scol.today .scol-bar i{background:var(--signal)}
+.scol:active .scol-bar i{background:var(--bone)}
+.scol-d{
+  font-family:var(--fm);font-size:9px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--dim);text-align:center;padding:5px 0 4px;margin-top:7px;border-top:1px solid var(--rule);
+}
+.scol.sel .scol-d{color:var(--bone);border-top-color:var(--bone)}
+.scol.today .scol-d{color:var(--signal);border-top-color:var(--signal)}
+.scol-d em{display:block;font-style:normal;font-size:8px;margin-top:3px;height:8px;color:var(--dim)}
+.scol.done .scol-d em{color:var(--bone)}
+.scol.skip .scol-d em{color:var(--signal)}
+
+/* ── strength accordion (inside spec table) ── */
+.strip-cap{color:var(--grey);margin-bottom:12px}
+.strip-cap b{color:var(--bone);font-weight:400}
+.spec-acc-h{width:100%}
+.acc-chev{color:var(--dim);font-size:11px;margin-left:8px}
+[data-open] .acc-chev{color:var(--signal)}
+.acc-body{padding:0}
+.acc-body .str{border:none;border-top:1px solid var(--rule);padding:13px 0;margin:0}
+.acc-body .str:first-child{border-top:none;padding-top:6px}
+.spec-acc[data-open]{border-bottom:1px solid var(--rule)}
+
+/* ── hero session ── */
+.hero{padding:22px var(--pad) 0}
+.hero-eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.hero-eyebrow .mono{color:var(--grey)}
+.hero-eyebrow .type{color:var(--signal)}
+.hero-num{
+  font-family:var(--fd);font-weight:800;font-size:96px;line-height:.78;
+  letter-spacing:-.02em;text-transform:uppercase;margin:0 0 2px;
+}
+.hero-num small{font-size:26px;letter-spacing:.02em;margin-left:2px;color:var(--grey)}
+.hero-title{
+  font-family:var(--fd);font-weight:700;font-size:26px;line-height:1;
+  letter-spacing:.02em;text-transform:uppercase;color:var(--bone);margin:8px 0 0;
+}
+.hero-sess{color:var(--grey);font-size:14px;line-height:1.55;margin:12px 0 0}
+.hero-note{color:var(--bone);font-size:13px;line-height:1.55;margin:8px 0 0}
+
+.spec{margin-top:20px;border-top:1px solid var(--rule)}
+.spec-row{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--rule)}
+.spec-row .mono{color:var(--dim);flex:none}
+.spec-v{font-family:var(--fm);font-size:11px;font-weight:600;letter-spacing:.04em;text-align:right}
+
+.act{
+  display:block;width:100%;text-align:center;margin-top:18px;padding:16px;
+  background:var(--bone);color:var(--void);
+  font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
+  transition:opacity .15s;
+}
+.act:active{opacity:.7}
+.act.done{background:transparent;color:var(--bone);border:1px solid var(--rule)}
+.act.ghost{background:transparent;color:var(--grey);border:1px solid var(--rule);margin-top:8px}
+
+/* ── alerts ── */
+.alert{margin-top:18px;border:1px solid var(--rule);border-left:2px solid var(--signal);padding:13px 14px;background:var(--panel)}
+.alert.green{border-left-color:var(--bone)}
+.alert.amber{border-left-color:var(--grey)}
+.alert-t{font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.alert-b{font-size:12.5px;color:var(--grey);line-height:1.55}
+
+/* ── section heads ── */
+.head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:26px var(--pad) 8px;
+}
+.head .mono{color:var(--dim)}
+
+/* ── plan list ── */
+.blk{padding:22px var(--pad) 6px;font-family:var(--fd);font-weight:700;font-size:19px;letter-spacing:.03em;text-transform:uppercase}
+.wrow{display:flex;align-items:center;gap:12px;width:100%;padding:12px var(--pad);border-top:1px solid var(--rule)}
+.wrow:active{background:var(--panel)}
+.wrow.now{background:var(--panel);border-left:2px solid var(--signal);padding-left:calc(var(--pad) - 2px)}
+.wn{font-family:var(--fm);font-size:11px;font-weight:600;color:var(--dim);width:22px;flex:none}
+.wrow.now .wn{color:var(--signal)}
+.wmid{flex:1;min-width:0;display:flex;flex-direction:column}
+.wt{font-family:var(--fd);font-weight:700;font-size:18px;letter-spacing:.02em;text-transform:uppercase;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wsub{font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.wbars{display:flex;align-items:flex-end;gap:2px;height:22px;width:56px;flex:none}
+.wbars i{flex:1;background:var(--dim);min-height:1px}
+
+/* ── stats ── */
+.big{padding:22px var(--pad) 0}
+.big-n{font-family:var(--fd);font-weight:800;font-size:110px;line-height:.76;letter-spacing:-.03em;color:var(--signal)}
+.big-l{font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);margin-top:12px}
+.pbar{height:2px;background:var(--rule);margin:18px var(--pad) 0}
+.pbar i{display:block;height:100%;background:var(--bone)}
+.g4{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--rule);margin-top:22px}
+.g4>div{padding:16px var(--pad);border-bottom:1px solid var(--rule)}
+.g4>div:nth-child(odd){border-right:1px solid var(--rule)}
+.gv{font-family:var(--fd);font-weight:800;font-size:38px;line-height:.9;letter-spacing:-.01em}
+.gl{font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+.evrow{display:flex;justify-content:space-between;align-items:center;padding:14px var(--pad);border-bottom:1px solid var(--rule)}
+.evn{font-family:var(--fd);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.02em}
+.evd{font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+.linkrow{display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px var(--pad);border-bottom:1px solid var(--rule);font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.linkrow:active{background:var(--panel)}
+.linkrow span:last-child{color:var(--dim)}
+
+/* ── tabs ── */
+.tabs{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;max-width:460px;margin:0 auto;
+  background:rgba(10,10,10,.96);backdrop-filter:blur(12px);border-top:1px solid var(--rule);
+  display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.tb{position:relative;height:var(--tabh);display:flex;align-items:center;justify-content:center;
+  font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);transition:color .15s}
+.tb + .tb{border-left:1px solid var(--rule)}
+.tb.on{color:var(--bone)}
+.tb.on::before{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--signal)}
+
+/* ── sheet ── */
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.8);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:460px;margin:0 auto;
+  background:var(--panel);border-top:1px solid var(--rule);
+  padding:0 var(--pad) calc(26px + env(safe-area-inset-bottom,0px));
+  transform:translateY(101%);transition:transform .28s cubic-bezier(.32,.72,0,1);
+  max-height:90dvh;overflow-y:auto;
+}
+.sheet.open{transform:translateY(0)}
+.sheet-close{position:sticky;top:18px;left:100%;margin-bottom:-30px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rule);background:var(--panel);color:var(--grey);font-size:16px;z-index:5}
+.sh-top{position:sticky;top:0;background:var(--panel);padding:18px 0 14px;border-bottom:1px solid var(--rule);margin-bottom:18px}
+.sh-t{font-family:var(--fd);font-weight:800;font-size:28px;line-height:1;letter-spacing:.01em;text-transform:uppercase}
+.sh-s{font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:7px}
+.fld{margin-bottom:18px}
+.fld > label{display:block;font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.inp{width:100%;background:var(--void);border:1px solid var(--rule);color:var(--bone);
+  font-family:var(--fb);font-size:15px;padding:13px 12px}
+.inp:focus{outline:none;border-color:var(--grey)}
+textarea.inp{min-height:80px;resize:vertical;line-height:1.5}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{padding:13px 4px;text-align:center;border:1px solid var(--rule);color:var(--grey);
+  font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.seg button.on{background:var(--bone);color:var(--void);border-color:var(--bone);font-weight:600}
+.seg button.on[data-st="s"]{background:var(--signal);border-color:var(--signal);color:var(--void)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.dayrow{display:flex;align-items:center;gap:12px;width:100%;padding:13px 0;border-bottom:1px solid var(--rule)}
+.dayrow .wn{width:auto;min-width:56px}
+.dr-t{font-family:var(--fd);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.dr-s{font-family:var(--fm);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.dr-k{font-family:var(--fm);font-size:11px;font-weight:600;margin-left:auto;flex:none}
+
+.str{border:1px solid var(--rule);padding:14px;margin-bottom:16px}
+.str-t{font-family:var(--fd);font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.02em}
+.str-s{font-family:var(--fm);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.str-e{padding:11px 0;border-top:1px solid var(--rule);margin-top:11px}
+.str-en{font-size:13px;font-weight:600}
+.str-ed{font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--grey);margin:4px 0 5px}
+.str-ec{font-size:12px;color:var(--grey);line-height:1.5}
+
+/* ── strava modal (original ids/classes preserved) ── */
+.strava-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center}
+.strava-panel{background:var(--panel);width:100%;max-width:460px;max-height:88dvh;overflow-y:auto;border-top:1px solid var(--rule);
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+.strava-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px var(--pad);border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--panel)}
+.strava-hdr > div > div:first-child{font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#FC4C02;margin-bottom:5px}
+#stravaModalTitle{font-family:var(--fd)!important;font-weight:800;font-size:24px!important;text-transform:uppercase;letter-spacing:.01em}
+.strava-hdr button{width:34px;height:34px;border:1px solid var(--rule)!important;background:transparent!important;color:var(--grey)!important;display:flex;align-items:center;justify-content:center;font-size:17px}
+.strava-body{padding:18px var(--pad) 26px}
+.strava-body button{font-family:var(--fm)!important;letter-spacing:.14em!important;background:#FC4C02!important;color:#fff!important;border:none!important;padding:14px 20px!important}
+.strava-body button[style*="transparent"]{background:transparent!important;color:var(--grey)!important;border:1px solid var(--rule)!important;padding:9px 14px!important}
+.strava-activity{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.strava-act-info{flex:1;min-width:0}
+.strava-act-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strava-act-meta{font-family:var(--fm);font-size:9px;letter-spacing:.06em;color:var(--dim);margin-top:4px}
+.strava-act-nomatch{font-family:var(--fm);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex:none}
+
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="status">
+    <div class="status-actions">
+      <button class="stbtn" data-recal="1">How am I doing</button>
+      <button class="stbtn" id="stravaBtn" onclick="stravaAction()">Connect Strava</button>
+    </div>
+    <span id="syncStatus">○ Connecting</span>
+  </div>
+  <div id="strip"></div>
+  <div id="view"></div>
+</div>
+
+<nav class="tabs" id="tabs">
+  <button class="tb on" data-tab="today">Today</button>
+  <button class="tb" data-tab="plan">Plan</button>
+  <button class="tb" data-tab="stats">Stats</button>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+
+<div class="strava-modal" id="stravaModal">
+  <div class="strava-panel">
+    <div class="strava-hdr">
+      <div>
+        <div>Strava</div>
+        <div id="stravaModalTitle">Connect Account</div>
+      </div>
+      <button onclick="closeStrava()" aria-label="Close">×</button>
+    </div>
+    <div class="strava-body" id="stravaBody">
+      <p style="font-size:13px;color:var(--grey);line-height:1.6;margin:0 0 18px">Import distance and time on feet straight into your log after each run.</p>
+      <button onclick="connectStrava()" style="width:100%">Connect with Strava</button>
+      <p style="font-family:var(--fm);font-size:9px;letter-spacing:.08em;color:var(--dim);margin-top:12px;line-height:1.6;text-align:center">Read only. Nothing is written to Strava.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* ===== PLAN DATA + SYNC (unchanged) ===== */
+
+const SA={t:"Strength A — Stability & Posterior Chain",s:"35–40 min · 12–16kg",
+w:"90/90 hip switches ×10 · Glute bridges ×15 · Lateral band walks ×20",
+e:[
+ ["Single-Leg Romanian Deadlift","3×10 each leg · 12–16kg","Most important for your gait. 3-sec lower, drive through heel. Targets glute/hamstring complex that controls supination at source."],
+ ["Goblet Squat with Pause","3×10 · 12–16kg","2-sec pause at bottom. Forces genuine glute recruitment. Knees track over toes."],
+ ["Kettlebell Swing","3×15 · 12–16kg","Hip hinge — not a squat. Explosive glute drive. Transfers to push-off on trail climbs."],
+ ["Lateral Step-Up","3×10 each leg · 8–12kg","Step sideways, drive through heel. Loads hip abductors — controls lateral stability on uneven ground."],
+ ["Dead Bug","3×10 each side · BW","Back pressed to floor. Anti-rotation core work for long descents."],
+],c:"Pigeon stretch 60s · Couch stretch 60s · Single-leg calf raises 3×15"};
+
+const SB={t:"Strength B — Explosiveness & Unilateral Resilience",s:"25–30 min · 8–12kg",
+w:"Leg swings ×15 · Hip circles ×10 · BW lateral lunges ×10",
+e:[
+ ["Single-Leg Box Jump","3×6 each leg · BW","Land softly on two. Quiet landings — noise means joints absorbing what muscles should."],
+ ["KB Lunge with Rotation","3×8 each leg · 8kg","Rotate KB toward front leg at bottom. Hip stability + quad + rotational core for off-camber terrain."],
+ ["Single-Leg Calf Raise with Pulse","3×15 each leg · 12–16kg","On a step edge. Lower below, raise fully, pulse twice. Slow. Critical for your supination pattern."],
+ ["Goblet Lateral Lunge","3×8 each side · 8–12kg","Step wide, opposite leg straight. Hip abductor strength + inner thigh mobility."],
+ ["Hollow Body Hold","3×25s · BW","Back into floor. Trains anterior chain to resist extension under load for hours on trail."],
+],c:"Hip flexor stretch 60s each side · Calf stretch 45s"};
+
+const TOF={e:{4:"30–40m",5:"40–50m",6:"45–55m",7:"55–65m",8:"60–75m",9:"70–85m",10:"75–95m",12:"1h 45m–2h 15m",14:"2h–2h 30m",15:"2h 10m–2h 45m",16:"2h 20m–3h",18:"2h 45m–3h 30m"},
+l:{12:"1h 45m–2h 15m",14:"2h–2h 30m",15:"2h 10m–2h 45m",16:"2h 20m–3h",18:"2h 45m–3h 30m",
+   20:"3h–3h 45m",22:"3h 20m–4h 15m",24:"3h 45m–4h 45m",26:"4h–5h",28:"4h 30m–5h 30m",
+   30:"5h–6h 30m",32:"5h 30m–7h",35:"6h–8h",40:"7h–10h"},
+q:{8:"55–75m",9:"65–80m",10:"65–85m",12:"80–100m"},r:{30:"3h–4h"},g:{40:"7h–10h"}};
+
+function gt(type,km){
+  if(!km)return'';
+  const n=parseInt(km.replace(/[^0-9]/,'').split('–')[0]);
+  return({l:'l',q:'q',e:'e',r:'r',g:'g'}[type]&&(TOF[{l:'l',q:'q',e:'e',r:'r',g:'g'}[type]]||{})[n])||km;
+}
+
+const W=[
+ {n:1,ph:"Recovery",lb:"Post-Race Rest",tot:"~26km",tof:"~3–4h",rng:"9–15 Jul",blk:"30km Block",days:[
+  ["Thu 9 Jul","e","Easy","6km","6km easy, flat.","4-5/10 perceived. No elevation pressure. First session back."],
+  ["Fri 10 Jul","d","Walk","","Rest or 30min easy walk.","Keep moving without loading the legs."],
+  ["Sat 11 Jul","e","Easy","8km","8km easy trail.","MacRitchie flat. Don't push."],
+  ["Sun 12 Jul","d","Rest","","Rest.",""],
+  ["Mon 13 Jul","d","Rest","","Rest.",""],
+  ["Tue 14 Jul","e","Easy","8km","8km easy trail.",""],
+  ["Wed 15 Jul","e","Easy Long","12km","12km easy MacRitchie — shakeout, not a workout.","Feel good, feel easy. Nothing more."],
+ ]},
+ {n:2,ph:"Build",lb:"Establish Rhythm",tot:"~44km",tof:"~6–7h",rng:"16–22 Jul",blk:"30km Block",days:[
+  ["Thu 16 Jul","d","Rest","","Rest.",""],
+  ["Fri 17 Jul","e","Easy","8km","8km easy trail.","Conversational effort throughout."],
+  ["Sat 18 Jul","l","Long Run","16km","16km long run, MacRitchie, easy effort throughout.","One gel. Start building the nutrition habit."],
+  ["Sun 19 Jul","e","Easy","6km","6km easy recovery.","Walk breaks fine if legs feel heavy."],
+  ["Mon 20 Jul","s","Strength B","","Strength B — 25-30min.","Short and sharp.",0,1],
+  ["Tue 21 Jul","e","Easy","8km","8km easy.",""],
+  ["Wed 22 Jul","q","Quality + Str A","10km","10km with 2x15min moderate (6/10). Strength A after.","Moderate = sentences but not a long conversation.",1],
+ ]},
+ {n:3,ph:"Build",lb:"Introduce Hills",tot:"~44km",tof:"~6–7h",rng:"23–29 Jul",blk:"30km Block",days:[
+  ["Thu 23 Jul","d","Rest","","Rest.",""],
+  ["Fri 24 Jul","e","Easy","8km","8km easy trail.",""],
+  ["Sat 25 Jul","l","Long Run","18km","18km long run. Introduce elevation intentionally.","Don't avoid the hills."],
+  ["Sun 26 Jul","e","Easy","6km","6km easy recovery.",""],
+  ["Mon 27 Jul","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 28 Jul","e","Easy","8km","8km easy.",""],
+  ["Wed 29 Jul","q","Hill Reps + Str A","8km","6x3min uphill hard, walk down full recovery. Strength A after.","Drive arms, shorten stride on climbs.",1],
+ ]},
+ {n:4,ph:"Recovery",lb:"Down Week",tot:"~32km",tof:"~4h",rng:"30 Jul – 5 Aug",blk:"30km Block",days:[
+  ["Thu 30 Jul","d","Rest","","Rest.",""],
+  ["Fri 31 Jul","e","Easy","6km","6km easy.",""],
+  ["Sat 1 Aug","l","Long Run","14km","14km easy. Pull back deliberately.","Should feel almost embarrassingly easy. That's the point."],
+  ["Sun 2 Aug","e","Easy","5km","5km easy.",""],
+  ["Mon 3 Aug","d","Rest","","Rest. One strength session this week only.",""],
+  ["Tue 4 Aug","e","Easy","7km","7km easy.",""],
+  ["Wed 5 Aug","q","Moderate + Str A","8km","8km moderate with strides. Strength A at 70%.","Every 4th week is a down week. Non-negotiable.",1],
+ ]},
+ {n:5,ph:"Specific",lb:"Push Past 21km",tot:"~51km",tof:"~7–8h",rng:"6–12 Aug",blk:"30km Block",days:[
+  ["Thu 6 Aug","d","Rest","","Rest.",""],
+  ["Fri 7 Aug","e","Easy","8km","8km easy trail.",""],
+  ["Sat 8 Aug","l","Long Run","22km","22km — first serious long effort. Eat every 45min.","Race simulation from a nutrition standpoint."],
+  ["Sun 9 Aug","e","Easy","7km","7km easy shakeout within 24hrs of long run.","Trains your legs for what km 25-30 feels like."],
+  ["Mon 10 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 11 Aug","e","Easy","8km","8km easy.",""],
+  ["Wed 12 Aug","q","Quality + Str A","10km","10km moderate with 200m elevation gain. Strength A after.","Back-to-back quality. Run morning, lift afternoon.",1],
+ ]},
+ {n:6,ph:"Specific",lb:"Break the Barrier",tot:"~48km",tof:"~7–8h",rng:"13–19 Aug",blk:"30km Block",days:[
+  ["Thu 13 Aug","d","Rest","","Rest.",""],
+  ["Fri 14 Aug","e","Easy","9km","9km easy trail.",""],
+  ["Sat 15 Aug","l","Long Run","24km","24km — push past the 21km barrier before race day.","A psychological milestone. Respect it."],
+  ["Sun 16 Aug","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 17 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 18 Aug","e","Easy","9km","9km easy.",""],
+  ["Wed 19 Aug","q","Hill Reps + Str A","9km","8x3min or 6x4min hill reps. Strength A after.","The difference from Week 3 should be noticeable.",1],
+ ]},
+ {n:7,ph:"Specific",lb:"Peak Week",tot:"~57km",tof:"~9–11h",rng:"20–26 Aug",blk:"30km Block",days:[
+  ["Thu 20 Aug","d","Rest","","Rest.",""],
+  ["Fri 21 Aug","e","Easy","8km","8km easy.",""],
+  ["Sat 22 Aug","l","Peak Long Run","26–28km","26-28km peak long run. Conservative first half, survive the second.","Most important session of the block. Finish is the only metric."],
+  ["Sun 23 Aug","e","Easy","6km","6km easy shakeout.",""],
+  ["Mon 24 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
+  ["Tue 25 Aug","e","Easy","9km","9km easy.",""],
+  ["Wed 26 Aug","q","Race Sim + Str A","12km","12km at race effort (7-8/10) with full race nutrition. Strength A after.","Most race-specific session of the block.",1],
+ ]},
+ {n:8,ph:"Recovery",lb:"Down Week",tot:"~35km",tof:"~4h 30m",rng:"27 Aug – 2 Sep",blk:"30km Block",days:[
+  ["Thu 27 Aug","d","Rest","","Rest.",""],
+  ["Fri 28 Aug","e","Easy","7km","7km easy.",""],
+  ["Sat 29 Aug","l","Long Run","15km","15km easy. No heroics.",""],
+  ["Sun 30 Aug","e","Easy","6km","6km easy.",""],
+  ["Mon 1 Sep","d","Rest","","Rest. One strength session this week.",""],
+  ["Tue 2 Sep","e","Easy","7km","7km easy.",""],
+  ["Wed 3 Sep","q","Moderate + Str A","8km","8km with 3x10min moderate. Strength A at 60-70%.","Huge stimulus absorbed — let it rebuild.",1],
+ ]},
+ {n:9,ph:"Taper",lb:"Sharpen Up",tot:"~40km",tof:"~5h",rng:"4–10 Sep",blk:"30km Block",days:[
+  ["Thu 4 Sep","d","Rest","","Rest.",""],
+  ["Fri 5 Sep","e","Easy","8km","8km easy.",""],
+  ["Sat 6 Sep","l","Last Long Run","16km","16km easy. Comfortable and confident.","You are fit. This is just a reminder."],
+  ["Sun 7 Sep","e","Easy","6km","6km easy.",""],
+  ["Mon 8 Sep","d","Rest","","Rest.",""],
+  ["Tue 9 Sep","e","Easy","8km","8km easy.",""],
+  ["Wed 10 Sep","q","Quality","10km","10km with 2x15min at race effort. Strength A at 50%.","Maintaining fitness while body recovers.",1],
+ ]},
+ {n:10,ph:"Taper",lb:"Race Week",tot:"~15km",tof:"~2h",rng:"11–13 Sep",blk:"30km Block",days:[
+  ["Thu 11 Sep","d","Rest","","Rest. Gear check.","Lay out all kit. Charge watch. Prep nutrition."],
+  ["Fri 12 Sep","e","Easy + Strides","5km","5km easy with 4x1min pickups.","Light on the feet. Sharp in the mind."],
+  ["Sat 13 Sep","r","Race Day","30km","30km Trail Race — Race Day.","Everything you have built is in your legs. Start conservatively. Fuel early. Enjoy it."],
+  ["Sun 14 Sep","d","Rest","","Rest.",""],
+  ["Mon 15 Sep","d","Rest","","Rest.",""],
+  ["Tue 16 Sep","d","Rest","","Rest.",""],
+  ["Wed 17 Sep","d","Rest","","Rest.",""],
+ ]},
+ {n:11,ph:"Recovery",lb:"Post-Race Rest",tot:"~20km",tof:"~2h 30m",rng:"18–24 Sep",blk:"Recovery",days:[
+  ["Thu 18 Sep","d","Rest","","Complete rest.","Race takes more than you realise on the day."],
+  ["Fri 19 Sep","d","Rest","","Rest.",""],
+  ["Sat 20 Sep","e","Walk/Easy","4km","Easy walk or very gentle jog only if legs feel ready.","Any soreness — walk only."],
+  ["Sun 21 Sep","d","Rest","","Rest.",""],
+  ["Mon 22 Sep","d","Rest","","Rest.",""],
+  ["Tue 23 Sep","e","Easy","6km","6km easy, flat.","4-5/10 maximum."],
+  ["Wed 24 Sep","e","Easy","8km","8km easy — one gentle MacRitchie loop.","No pressure on pace or time."],
+ ]},
+ {n:12,ph:"Recovery",lb:"Rebuild Base",tot:"~32km",tof:"~3h 45m",rng:"25 Sep – 1 Oct",blk:"Recovery",days:[
+  ["Thu 25 Sep","d","Rest","","Rest.",""],
+  ["Fri 26 Sep","e","Easy","8km","8km easy trail.",""],
+  ["Sat 27 Sep","l","Easy Long","14km","14km easy long run.","Rebuilding, not racing."],
+  ["Sun 28 Sep","e","Easy","6km","6km easy.",""],
+  ["Mon 29 Sep","s","Strength B","","Strength B — 60% load.","",0,1],
+  ["Tue 30 Sep","e","Easy","7km","7km easy.",""],
+  ["Wed 1 Oct","q","Moderate + Str A","8km","8km easy to moderate. Strength A at 60%.","Ease back in gently.",1],
+ ]},
+ {n:13,ph:"Build",lb:"40km Foundation",tot:"~48km",tof:"~6h 30m",rng:"2–8 Oct",blk:"40km Block",days:[
+  ["Thu 2 Oct","d","Rest","","Rest.",""],
+  ["Fri 3 Oct","e","Easy","9km","9km easy trail.",""],
+  ["Sat 4 Oct","l","Long Run","20km","20km — two MacRitchie loops.","Your new baseline."],
+  ["Sun 5 Oct","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 6 Oct","s","Strength B","","Strength B — full load.","",0,1],
+  ["Tue 7 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 8 Oct","q","Quality + Str A","10km","10km with 3x15min moderate. Strength A after.","Start of the 40km block.",1],
+ ]},
+ {n:14,ph:"Build",lb:"Extend Long Run",tot:"~52km",tof:"~7h",rng:"9–15 Oct",blk:"40km Block",days:[
+  ["Thu 9 Oct","d","Rest","","Rest.",""],
+  ["Fri 10 Oct","e","Easy","9km","9km easy trail.",""],
+  ["Sat 11 Oct","l","Long Run","24km","24km — back past the 21km barrier again.","More manageable than before the 30km race."],
+  ["Sun 12 Oct","e","Easy","7km","7km easy.",""],
+  ["Mon 13 Oct","s","Strength B","","Strength B.","",0,1],
+  ["Tue 14 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 15 Oct","q","Hill Reps + Str A","10km","8x3min or 6x4min hill reps. Strength A after.","",1],
+ ]},
+ {n:15,ph:"Specific",lb:"Three-Loop Target",tot:"~55km",tof:"~8–9h",rng:"16–22 Oct",blk:"40km Block",days:[
+  ["Thu 16 Oct","d","Rest","","Rest.",""],
+  ["Fri 17 Oct","e","Easy","9km","9km easy trail.",""],
+  ["Sat 18 Oct","l","Three-Loop Run","30km","30km — three MacRitchie loops. First time at 40km effort equivalent.","Fuel every 40min. The psychological breakthrough of the 40km block."],
+  ["Sun 19 Oct","e","Easy","7km","7km easy shakeout.",""],
+  ["Mon 20 Oct","s","Strength B","","Strength B.","",0,1],
+  ["Tue 21 Oct","e","Easy","9km","9km easy.",""],
+  ["Wed 22 Oct","q","Race Sim + Str A","12km","12km sustained with full nutrition protocol. Strength A after.","Practise your 40km nutrition strategy here.",1],
+ ]},
+ {n:16,ph:"Recovery",lb:"Down Week",tot:"~38km",tof:"~4h 45m",rng:"23–29 Oct",blk:"40km Block",days:[
+  ["Thu 23 Oct","d","Rest","","Rest.",""],
+  ["Fri 24 Oct","e","Easy","8km","8km easy.",""],
+  ["Sat 25 Oct","l","Long Run","16km","16km easy. Pull back deliberately.","Let the three-loop effort absorb."],
+  ["Sun 26 Oct","e","Easy","6km","6km easy.",""],
+  ["Mon 27 Oct","d","Rest","","Rest. One strength session this week.",""],
+  ["Tue 28 Oct","e","Easy","8km","8km easy.",""],
+  ["Wed 29 Oct","q","Moderate + Str A","8km","8km moderate. Strength A at 70%.","",1],
+ ]},
+ {n:17,ph:"Specific",lb:"Peak 40km Prep",tot:"~59km",tof:"~10–12h",rng:"30 Oct – 5 Nov",blk:"40km Block",days:[
+  ["Thu 30 Oct","d","Rest","","Rest.",""],
+  ["Fri 31 Oct","e","Easy","9km","9km easy trail.",""],
+  ["Sat 1 Nov","l","Peak Long Run","32–35km","32-35km peak long run. Time on feet: 5.5-7h.","Longest run of the year. This run makes December possible."],
+  ["Sun 2 Nov","e","Easy","7km","7km easy shakeout within 24hrs.","Training your legs for what km 32-40 feels like."],
+  ["Mon 3 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 4 Nov","e","Easy","9km","9km easy.",""],
+  ["Wed 5 Nov","q","Quality + Str A","12km","12km sustained. Practise eating through fatigue. Strength A after.","Fuelling when you don't feel like it is a skill.",1],
+ ]},
+ {n:18,ph:"Recovery",lb:"Consolidation",tot:"~40km",tof:"~5h",rng:"6–12 Nov",blk:"40km Block",days:[
+  ["Thu 6 Nov","d","Rest","","Rest.",""],
+  ["Fri 7 Nov","e","Easy","8km","8km easy.",""],
+  ["Sat 8 Nov","l","Long Run","18km","18km easy. Recovery long run.","Should feel manageable after last week."],
+  ["Sun 9 Nov","e","Easy","7km","7km easy.",""],
+  ["Mon 10 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 11 Nov","e","Easy","8km","8km easy.",""],
+  ["Wed 12 Nov","q","Moderate + Str A","9km","9km moderate. Strength A at 70%.","",1],
+ ]},
+ {n:19,ph:"Build",lb:"Final Build",tot:"~50km",tof:"~6h 30m",rng:"13–19 Nov",blk:"Goal Prep",days:[
+  ["Thu 13 Nov","d","Rest","","Rest.",""],
+  ["Fri 14 Nov","e","Easy","9km","9km easy trail.",""],
+  ["Sat 15 Nov","l","Long Run","26km","26km — two and a half loops if possible.","Sharpening, not building."],
+  ["Sun 16 Nov","e","Easy","7km","7km easy.",""],
+  ["Mon 17 Nov","s","Strength B","","Strength B.","",0,1],
+  ["Tue 18 Nov","e","Easy","9km","9km easy.",""],
+  ["Wed 19 Nov","q","Quality + Str A","10km","10km with 4x10min sustained. Strength A after.","",1],
+ ]},
+ {n:20,ph:"Taper",lb:"Pre-Goal Taper",tot:"~40km",tof:"~5h",rng:"20–26 Nov",blk:"Goal Prep",days:[
+  ["Thu 20 Nov","d","Rest","","Rest.",""],
+  ["Fri 21 Nov","e","Easy","8km","8km easy.",""],
+  ["Sat 22 Nov","l","Last Long Run","18km","18km easy. Comfortable and confident.","You are ready."],
+  ["Sun 23 Nov","e","Easy","6km","6km easy.",""],
+  ["Mon 24 Nov","d","Rest","","Rest.",""],
+  ["Tue 25 Nov","e","Easy","8km","8km easy.",""],
+  ["Wed 26 Nov","q","Quality","10km","10km with 2x15min at goal effort. Strength A at 50%.","Keep legs sharp. Trust the training.",1],
+ ]},
+ {n:21,ph:"Taper",lb:"Goal Week Prep",tot:"~15km",tof:"~1h 45m",rng:"27 Nov – 3 Dec",blk:"Goal Prep",days:[
+  ["Thu 27 Nov","d","Rest","","Rest. Gear prep. Route planning.","Plan nutrition drops and pacer points."],
+  ["Fri 28 Nov","e","Easy + Strides","6km","6km easy with 4x1min pickups.",""],
+  ["Sat 29 Nov","e","Very Easy","5km","5km very easy.",""],
+  ["Sun 30 Nov","d","Rest","","Rest. Sleep well.",""],
+  ["Mon 1 Dec","d","Rest","","Rest.",""],
+  ["Tue 2 Dec","e","Shakeout","4km","4km very easy, 6 strides.","Light on the legs. Sharp in the mind."],
+  ["Wed 3 Dec","d","Rest","","Rest. Everything is ready.",""],
+ ]},
+ {n:22,ph:"Goal",lb:"40km Attempt",tot:"40km",tof:"7–10h",rng:"Dec (TBC)",blk:"Goal",days:[
+  ["Thu 4 Dec","d","Rest","","Rest. Final preparation.","Everything is already in your legs."],
+  ["Fri 5 Dec","e","Very Easy","4km","4km very easy shakeout only.",""],
+  ["Sat 6 Dec","g","40km Goal","40km","4 Loops of MacRitchie — 40km Goal Attempt.","5 months in your legs. Start conservatively. Fuel every 40min. Walk climbs from loop 3. Pacer joins at loop 3."],
+  ["Sun 7 Dec","d","Rest","","Rest. Celebrate.","You just ran 40km."],
+  ["Mon 8 Dec","d","Rest","","Rest.",""],
+  ["Tue 9 Dec","d","Rest","","Rest.",""],
+  ["Wed 10 Dec","d","Rest","","Rest.",""],
+ ]},
+];
+const ALL=W.flatMap(w=>w.days.map(d=>({
+  day:d[0],type:d[1],tag:d[2],km:d[3],session:d[4],note:d[5],
+  sA:d[6]||0,sB:d[7]||0,
+  wn:w.n,wph:w.ph,wlb:w.lb,wrng:w.rng,wblk:w.blk
+})));
+
+const TC={l:'tl',q:'tq',e:'te',s:'ts',r:'tr',g:'tg',d:'td'};
+const COL={l:'#8B3A0F',q:'#5C4A0A',e:'#1A4D2E',s:'#1F3566',r:'#8B0000',g:'#3D1F6B',d:'#888'};
+const ADAPT={l:"Missed long run: continue with planned schedule. Don't double up. One missed long run won't derail the block.",
+q:"Missed quality: replace with easy run or move on. Never compress two quality sessions into the same week.",
+s:"Missed strength: add it to next non-long, non-quality day — or skip and continue.",
+e:"Missed easy run: simply skip it. Easy days are the most expendable sessions in the schedule."};
+
+let cW=0,sD=0;
+// ── SUPABASE ──────────────────────────────────────
+const SB_URL='https://qqnbkuvfdxewrawnnxbk.supabase.co';
+const SB_KEY='sb_publishable_bgt0ukBqo36iqUiipMoc8w_C7cKdFpf';
+let sb=null;
+try{
+  if(typeof supabase!=='undefined')sb=supabase.createClient(SB_URL,SB_KEY);
+}catch(e){console.warn('Supabase not available',e);}
+
+// In-memory cache so UI stays snappy
+let CACHE={};
+let SYNCED=false;
+
+async function initDB(){
+  try{
+    if(!sb)throw new Error('Supabase not available');
+    // Hard 5-second timeout — never block the UI
+    const fetchWithTimeout=Promise.race([
+      sb.from('training_logs').select('*'),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Timeout')),5000))
+    ]);
+    const{data,error}=await fetchWithTimeout;
+    if(error)throw error;
+    CACHE={};
+    (data||[]).forEach(r=>{
+      CACHE[r.day_key]={st:r.status,at:r.actual_time,ad:r.actual_distance,n:r.notes};
+    });
+    SYNCED=true;
+    setSyncStatus('synced');
+  }catch(e){
+    console.warn('Supabase offline, using localStorage',e);
+    try{CACHE=JSON.parse(localStorage.getItem('trail_v4')||'{}')}catch{}
+    // Check if table is missing vs connection issue
+    const msg=e.message||'';
+    if(msg.includes('relation')||msg.includes('does not exist')||msg.includes('42P01')){
+      setSyncStatus('setup');
+    } else {
+      setSyncStatus('offline');
+    }
+  }
+  render();
+}
+
+function setSyncStatus(state){
+  try{
+  const el=document.getElementById('syncStatus');
+  if(!el)return;
+  const map={synced:'● Synced',offline:'○ Offline',saving:'↑ Saving...','setup':'⚠ Run SQL setup'};
+  el.textContent=map[state]||state;
+  el.style.color=state==='synced'?'var(--ec)':state==='offline'?'var(--rc)':'var(--ink-d)';
+  }catch(e){}
+}
+
+function gl(){return CACHE;}
+
+async function sl(logs){
+  CACHE=logs;
+  // Always persist to localStorage as fallback
+  try{localStorage.setItem('trail_v4',JSON.stringify(logs))}catch{}
+}
+
+async function saveToDB(dayKey,entry){
+  if(!sb){setSyncStatus('offline');return;}
+  setSyncStatus('saving');
+  try{
+    const{error}=await sb.from('training_logs').upsert({
+      day_key:dayKey,
+      status:entry.st||null,
+      actual_time:entry.at||null,
+      actual_distance:entry.ad||null,
+      notes:entry.n||null
+    },{onConflict:'day_key'});
+    if(error)throw error;
+    setSyncStatus('synced');
+  }catch(e){
+    console.warn('Save failed, stored locally',e);
+    setSyncStatus('offline');
+  }
+}
+function dk(d){return d.day.replace(/\s+/g,'_')}
+function dn(s){const m=s.match(/\d+/);return m?m[0]:''}
+function mo(s){
+  if(s.includes('Jul'))return'July 2026';if(s.includes('Aug'))return'August 2026';
+  if(s.includes('Sep'))return'September 2026';if(s.includes('Oct'))return'October 2026';
+  if(s.includes('Nov'))return'November 2026';if(s.includes('Dec'))return'December 2026';
+  return'Other';
+}
+const SD={'July 2026':10,'August 2026':5,'September 2026':6,'October 2026':4,'November 2026':6,'December 2026':4};
+
+
+/* ===== RECALIBRATION ENGINE (unchanged) ===== */
+function getRecalibration(){
+  const logs=gl();
+  const now=new Date();
+  // Look at last 14 days of sessions
+  const recent=ALL.filter(d=>{
+    const parts=d.day.match(/(\d+)\s+(\w+)/);
+    if(!parts)return false;
+    const months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+    const dt=new Date(2026,months[parts[2]],parseInt(parts[1]));
+    const diff=(now-dt)/(1000*60*60*24);
+    return diff>=0&&diff<=14;
+  });
+
+  const skippedLong=recent.filter(d=>d.type==='l'&&logs[dk(d)]?.st==='s').length;
+  const skippedQual=recent.filter(d=>d.type==='q'&&logs[dk(d)]?.st==='s').length;
+  const skippedAny=recent.filter(d=>d.type!=='d'&&logs[dk(d)]?.st==='s').length;
+  const doneAny=recent.filter(d=>logs[dk(d)]?.st==='d'||logs[dk(d)]?.st==='p').length;
+  const hasInjuryNote=recent.some(d=>{
+    const n=(logs[dk(d)]?.n||'').toLowerCase();
+    return n.includes("pain")||n.includes("injury")||n.includes("hurt")||n.includes("sore")||n.includes("strain");
+  });
+
+  const alerts=[];
+  if(hasInjuryNote){
+    alerts.push({type:"red",title:"Injury flag detected",body:"Your recent notes mention pain or soreness. Replace your next quality session with an easy run and monitor carefully. If it persists, take 2 full rest days before resuming."});
+  }
+  if(skippedLong>=1){
+    alerts.push({type:"amber",title:"Missed long run",body:"You've missed a long run in the last 2 weeks. Don't double up. Continue with the planned schedule and trust the fitness you've already built."});
+  }
+  if(skippedQual>=2){
+    alerts.push({type:"amber",title:"2+ quality sessions missed",body:"Two or more quality sessions skipped recently. Drop to easy runs only for the next 3 days before reintroducing quality work. Never compress two quality sessions into one week."});
+  }
+  if(skippedAny>=4){
+    alerts.push({type:"red",title:"High skip rate this fortnight",body:"4 or more sessions skipped in 14 days. Consider declaring a formal recovery week — run easy every other day only. Resume the plan from the following Monday."});
+  }
+  if(doneAny>=8&&skippedAny===0){
+    alerts.push({type:"green",title:"Excellent consistency",body:"8 or more sessions completed with no skips. Strong base building. Ensure your easy days are genuinely easy — the temptation to push on good form is often costly."});
+  }
+  if(alerts.length===0){
+    alerts.push({type:"grey",title:"Plan on track",body:"No adjustments needed. Log your sessions consistently and check back here as your block progresses."});
+  }
+  return alerts;
+}
+
+
+/* ===== STRAVA (unchanged) ===== */
+const STRAVA_CLIENT_ID='264372';
+const STRAVA_KEY='strava_v3';
+
+function getStravaToken(){
+  try{
+    const t=JSON.parse(localStorage.getItem(STRAVA_KEY)||'null');
+    if(!t||!t.access_token)return null;
+    return t;
+  }catch{return null;}
+}
+
+function setStravaToken(t){
+  try{localStorage.setItem(STRAVA_KEY,JSON.stringify(t));}catch{}
+}
+
+function stravaAction(){
+  const token=getStravaToken();
+  if(token){showStravaActivities();}
+  else{document.getElementById('stravaModal').style.display='flex';}
+}
+
+function closeStrava(){
+  document.getElementById('stravaModal').style.display='none';
+}
+
+function connectStrava(){
+  // Hardcode the redirect URI to exactly match Strava's registered callback domain
+  const redirect=encodeURIComponent('https://codystrainingplan.netlify.app/');
+  const url='https://www.strava.com/oauth/authorize'
+    +'?client_id='+STRAVA_CLIENT_ID
+    +'&redirect_uri='+redirect
+    +'&response_type=code'
+    +'&scope=activity:read';
+  window.location.href=url;
+}
+
+async function ensureFreshToken(){
+  const token=getStravaToken();
+  if(!token)return null;
+  // Refresh if expiring within 5 minutes
+  if(Date.now()/1000 > (token.expires_at||0) - 300){
+    try{
+      const res=await fetch('/.netlify/functions/strava?action=refresh&refresh_token='+token.refresh_token);
+      const data=await res.json();
+      if(data.access_token){
+        const updated=Object.assign({},token,data);
+        setStravaToken(updated);
+        return updated;
+      }
+    }catch(e){console.warn('Token refresh failed',e);}
+  }
+  return token;
+}
+
+function fmtTime(s){
+  const h=Math.floor(s/3600);
+  const m=Math.floor((s%3600)/60);
+  return h>0?h+'h '+m+'m':m+'m';
+}
+
+async function showStravaActivities(){
+  const modal=document.getElementById('stravaModal');
+  const body=document.getElementById('stravaBody');
+  document.getElementById('stravaModalTitle').textContent='Your Recent Runs';
+  modal.style.display='flex';
+  body.innerHTML='<p style="font-size:13px;color:var(--ink-d);text-align:center;padding:20px 0">Loading from Strava...</p>';
+
+  const token=await ensureFreshToken();
+  if(!token){
+    body.innerHTML='<p style="font-size:13px;color:var(--ink-m);margin-bottom:14px">Session expired — please reconnect.</p>'
+      +'<button onclick="connectStrava()" style="background:#FC4C02;color:#fff;border:none;padding:10px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%">Reconnect with Strava</button>';
+    return;
+  }
+
+  try{
+    const res=await fetch(
+      'https://www.strava.com/api/v3/athlete/activities?per_page=60&page=1',
+      {headers:{Authorization:'Bearer '+token.access_token}}
+    );
+    if(!res.ok){
+      const err=await res.json();
+      throw new Error(err.message||'Strava API error '+res.status);
+    }
+    const activities=await res.json();
+    const logs=gl();
+    const mMap={Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
+                Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+    const matched=[];
+    const unmatched=[];
+
+    activities.forEach(function(act){
+      const isRun=['Run','TrailRun','VirtualRun','Hike','Walk'].includes(act.type);
+      const actDate=act.start_date_local.slice(0,10);
+      const planned=ALL.find(function(d){
+        const p=d.day.match(/(\w+)\s+(\d+)\s+(\w+)/);
+        if(!p)return false;
+        const ds='2026-'+(mMap[p[3]]||'00')+'-'+p[2].padStart(2,'0');
+        return ds===actDate;
+      });
+      if(planned&&isRun){
+        matched.push({
+          act:act,planned:planned,idx:ALL.indexOf(planned),
+          dist:+(act.distance/1000).toFixed(2),
+          time:act.moving_time,
+          elev:act.total_elevation_gain
+        });
+      } else if(isRun){
+        unmatched.push(act);
+      }
+    });
+
+    const frag=document.createDocumentFragment();
+
+    if(matched.length===0&&unmatched.length===0){
+      const p=document.createElement('p');
+      p.style.cssText='font-size:13px;color:var(--ink-d);text-align:center;padding:20px 0';
+      p.textContent='No running activities found in your recent Strava history.';
+      frag.appendChild(p);
+    }
+
+    if(matched.length>0){
+      const hdr=document.createElement('div');
+      hdr.style.cssText='font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-d);margin-bottom:12px';
+      hdr.textContent='Matched to your training plan ('+matched.length+')';
+      frag.appendChild(hdr);
+
+      matched.forEach(function(m){
+        const log=logs[dk(m.planned)]||{};
+        const alreadyLogged=!!(log.at||log.ad);
+        const row=document.createElement('div');
+        row.className='strava-activity';
+        const info=document.createElement('div');
+        info.className='strava-act-info';
+        const name=document.createElement('div');
+        name.className='strava-act-name';
+        name.textContent=m.act.name;
+        const meta=document.createElement('div');
+        meta.className='strava-act-meta';
+        meta.textContent=m.planned.day+' · '+m.dist+'km · '+fmtTime(m.time)+(m.elev>10?' · '+Math.round(m.elev)+'m ↑':'');
+        info.appendChild(name);
+        info.appendChild(meta);
+        row.appendChild(info);
+        if(alreadyLogged){
+          const badge=document.createElement('span');
+          badge.className='strava-act-nomatch';
+          badge.textContent='Already logged';
+          row.appendChild(badge);
+        } else {
+          const btn=document.createElement('button');
+          btn.style.cssText='font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;background:var(--ink);color:#fff;border:none;cursor:pointer;white-space:nowrap';
+          btn.textContent='Import';
+          (function(idx,dist,t){
+            btn.onclick=function(){importStravaActivity(idx,dist,t);};
+          })(m.idx,m.dist+'km',fmtTime(m.time));
+          row.appendChild(btn);
+        }
+        frag.appendChild(row);
+      });
+    }
+
+    if(unmatched.length>0){
+      const hdr2=document.createElement('div');
+      hdr2.style.cssText='font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-d);margin:18px 0 10px';
+      hdr2.textContent='Other recent runs';
+      frag.appendChild(hdr2);
+      unmatched.slice(0,4).forEach(function(act){
+        const dist=+(act.distance/1000).toFixed(2);
+        const row=document.createElement('div');
+        row.className='strava-activity';
+        const info=document.createElement('div');
+        info.className='strava-act-info';
+        const name=document.createElement('div');
+        name.className='strava-act-name';
+        name.textContent=act.name;
+        const meta=document.createElement('div');
+        meta.className='strava-act-meta';
+        meta.textContent=act.start_date_local.slice(0,10)+' · '+dist+'km · '+fmtTime(act.moving_time);
+        info.appendChild(name);
+        info.appendChild(meta);
+        const badge=document.createElement('span');
+        badge.className='strava-act-nomatch';
+        badge.textContent='Outside plan';
+        row.appendChild(info);
+        row.appendChild(badge);
+        frag.appendChild(row);
+      });
+    }
+
+    const footer=document.createElement('div');
+    footer.style.cssText='margin-top:18px;padding-top:14px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center';
+    const discBtn=document.createElement('button');
+    discBtn.style.cssText='font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;background:transparent;border:1px solid var(--rule);cursor:pointer;color:var(--ink-d)';
+    discBtn.textContent='Disconnect Strava';
+    discBtn.onclick=disconnectStrava;
+    const note=document.createElement('span');
+    note.style.cssText='font-size:10px;color:var(--ink-d)';
+    note.textContent='Auto-refreshes · read only';
+    footer.appendChild(discBtn);
+    footer.appendChild(note);
+    frag.appendChild(footer);
+
+    body.innerHTML='';
+    body.appendChild(frag);
+
+  }catch(e){
+    body.innerHTML='<p style="color:var(--rc);font-size:13px;line-height:1.6">Could not load activities.<br><small>'+e.message+'</small></p>'
+      +'<button onclick="connectStrava()" style="margin-top:12px;background:#FC4C02;color:#fff;border:none;padding:9px 18px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Reconnect</button>';
+  }
+}
+
+async function importStravaActivity(dayIdx,distance,time){
+  const logs=gl();
+  const day=ALL[dayIdx];
+  const k=dk(day);
+  if(!logs[k])logs[k]={};
+  logs[k].ad=distance;
+  logs[k].at=time;
+  if(!logs[k].st)logs[k].st='d';
+  await sl(logs);
+  await saveToDB(k,logs[k]);
+  rStats();
+  rMonth();
+  showStravaActivities();
+}
+
+function disconnectStrava(){
+  localStorage.removeItem(STRAVA_KEY);
+  updateStravaBtn(false,null);
+  closeStrava();
+}
+
+function updateStravaBtn(connected,name){
+  const btn=document.getElementById('stravaBtn');
+  if(!btn)return;
+  if(connected){
+    btn.textContent=(name||'')+(name?' · Strava':'Strava');
+    btn.style.color='#FC4C02';
+  } else {
+    btn.textContent='Connect Strava';
+    btn.style.color='var(--ink-d)';
+  }
+}
+
+// Handle OAuth callback — code arrives as ?code= query param
+async function handleStravaCallback(){
+  const params=new URLSearchParams(window.location.search);
+  const code=params.get('code');
+  const scope=params.get('scope');
+  const error=params.get('error');
+
+  if(error){
+    window.history.replaceState({},'',window.location.pathname);
+    showStravaError('Strava denied access: '+error);
+    return;
+  }
+
+  if(!code)return;
+
+  // Clean URL immediately
+  window.history.replaceState({},'',window.location.pathname);
+
+  updateStravaBtn(true,null);
+  const btn=document.getElementById('stravaBtn');
+  if(btn)btn.textContent='Connecting...';
+
+  try{
+    const res=await fetch('/.netlify/functions/strava?action=exchange&code='+code);
+    const responseText=await res.text();
+    let data;
+    try{data=JSON.parse(responseText);}catch(je){
+      throw new Error('Function not JSON ('+res.status+'): '+responseText.slice(0,150));
+    }
+    if(!res.ok||!data.access_token){
+      // Surface the exact Strava error
+      const stravaErr=data.message||data.error||JSON.stringify(data);
+      throw new Error('Exchange failed ('+res.status+'): '+stravaErr);
+    }
+    setStravaToken(data);
+    updateStravaBtn(true, data.athlete&&data.athlete.firstname?data.athlete.firstname:null);
+    setTimeout(showStravaActivities,300);
+  }catch(e){
+    console.error('Strava auth failed:',e.message);
+    if(btn)btn.textContent='Connect Strava';
+    showStravaError(e.message);
+  }
+}
+
+function showStravaError(msg){
+  const title=document.getElementById('stravaModalTitle');
+  const body=document.getElementById('stravaBody');
+  const modal=document.getElementById('stravaModal');
+  if(title)title.textContent='Connection Failed';
+  if(body){
+    body.innerHTML='';
+    const p=document.createElement('p');
+    p.style.cssText='font-size:12px;color:var(--rc);margin-bottom:14px;word-break:break-all;line-height:1.5';
+    p.textContent=msg;
+    body.appendChild(p);
+    const btn=document.createElement('button');
+    btn.style.cssText='background:#FC4C02;color:#fff;border:none;padding:11px 20px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;width:100%';
+    btn.textContent='Try Again';
+    btn.onclick=connectStrava;
+    body.appendChild(btn);
+  }
+  if(modal)modal.style.display='flex';
+}
+
+function initStravaUI(){
+  const token=getStravaToken();
+  if(token){
+    updateStravaBtn(true, token.athlete&&token.athlete.firstname?token.athlete.firstname:null);
+  }
+}
+
+/* ════════════════════════════════════════════════════════
+   UI LAYER — app-first. All plan data, sync, recalibration
+   and Strava logic above this line is unchanged.
+   ════════════════════════════════════════════════════════ */
+
+const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+const TYPE={l:'Long Run',q:'Quality',e:'Easy',s:'Strength',r:'Race',g:'Goal',d:'Rest'};
+
+function pd(str){const m=str.match(/(\w+)\s+(\d+)\s+(\w+)/);return m?new Date(2026,MON[m[3]],+m[2]):null;}
+function km(d){const n=parseFloat(dn(d.km||''));return isNaN(n)?0:n;}
+function esc(s){return(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const DATES=ALL.map(d=>pd(d.day));
+
+function todayIdx(){
+  for(let i=0;i<DATES.length;i++){if(DATES[i]&&DATES[i].getTime()===TODAY.getTime())return i;}
+  for(let i=0;i<DATES.length;i++){if(DATES[i]&&DATES[i]>=TODAY)return i;}
+  return DATES.length-1;
+}
+const TIDX=todayIdx();
+let selIdx=TIDX;
+let tab='today';
+
+const wkOf=i=>ALL[i].wn;
+const wkDays=n=>ALL.slice((n-1)*7,n*7);
+const isToday=i=>i===TIDX&&DATES[i]&&DATES[i].getTime()===TODAY.getTime();
+const dow=s=>s.slice(0,2).toUpperCase();
+
+function logOf(d){return gl()[dk(d)]||null;}
+
+/* ── week strip ─────────────────────────────────────── */
+function strip(){
+  const days=wkDays(wkOf(selIdx));
+  const base=(wkOf(selIdx)-1)*7;
+  const peak=Math.max(...days.map(km),1);
+  const onTodayWeek=wkOf(selIdx)===wkOf(TIDX);
+  return `<div class="strip">
+    <div class="strip-cap mono" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <button data-openweeks="1" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Week ${String(wkOf(selIdx)).padStart(2,'0')} / 22 · <b>${esc(ALL[selIdx].wph)}</b> <span style="color:var(--dim)">▾</span></button>
+      ${onTodayWeek?'':'<button data-back-today="1" class="mono" style="color:var(--signal);white-space:nowrap;flex:none">← Back to Today</button>'}
+    </div>
+    <div class="strip-cols" id="stripCols">${days.map((d,i)=>{
+      const g=base+i,l=logOf(d);
+      const h=km(d)?Math.max(8,Math.round(km(d)/peak*52)):0;
+      const mark=l&&l.st==='d'?'●':l&&l.st==='p'?'◐':l&&l.st==='s'?'×':'';
+      const cls=['scol',g===selIdx?'sel':'',isToday(g)?'today':'',l&&l.st==='d'?'done':'',l&&l.st==='s'?'skip':''].join(' ');
+      return `<button class="${cls}" data-i="${g}">
+        <span class="scol-bar">${km(d)?`<i style="height:${h}px"></i>`:'<u></u>'}</span>
+        <span class="scol-d">${dow(d.day)}<em>${mark}</em></span>
+      </button>`;
+    }).join('')}</div>
+  </div>`;
+}
+
+/* ── today ──────────────────────────────────────────── */
+function vToday(){
+  const d=ALL[selIdx],l=logOf(d),wk=W[d.wn-1];
+  const tof=gt(d.type,d.km);
+  const alerts=getRecalibration().slice(0,2);
+
+  const heroNum=km(d)
+    ? `${dn(d.km)}<small>KM</small>`
+    : `<span style="font-size:52px;line-height:1">${esc(d.tag)}</span>`;
+
+  const strs=[];if(d.sA)strs.push(SA);if(d.sB)strs.push(SB);
+
+  return `
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="mono">${esc(d.day)}${isToday(selIdx)?' · Today':''}</span>
+      <span class="mono type">${TYPE[d.type]||''}</span>
+    </div>
+    <div class="hero-num">${heroNum}</div>
+    <p class="hero-sess">${esc(d.session)}</p>
+    ${d.note?`<p class="hero-note">${esc(d.note)}</p>`:''}
+
+    <div class="spec">
+      ${tof?`<div class="spec-row"><span class="mono">Time on feet</span><span class="spec-v">${esc(tof)}</span></div>`:''}
+      <div class="spec-row"><span class="mono">Week</span><span class="spec-v">${esc(d.wlb)}</span></div>
+      ${strs.length?`<div class="spec-acc">
+        <button class="spec-row spec-acc-h" data-acc="1" aria-expanded="false">
+          <span class="mono">Strength ${strs.length>1?'A + B':(d.sA?'A':'B')}</span>
+          <span class="spec-v">View<span class="acc-chev">▾</span></span>
+        </button>
+        <div class="acc-body" hidden>${strs.map(strBlock).join('')}</div>
+      </div>`:''}
+      <div class="spec-row"><span class="mono">Block</span><span class="spec-v">${esc(d.wblk)}</span></div>
+      <div class="spec-row"><span class="mono">Week volume</span><span class="spec-v">${esc(wk.tot)} · ${esc(wk.tof)}</span></div>
+      ${l&&(l.ad||l.at)?`<div class="spec-row"><span class="mono">Logged</span><span class="spec-v">${esc(l.ad||'')}${l.ad&&l.at?' · ':''}${esc(l.at||'')}</span></div>`:''}
+    </div>
+
+    <button class="act${l?' done':''}" data-log="1">${l?'Edit log':(d.type==='d'?'Mark rest taken':'Log session')}</button>
+
+    ${alerts.map(a=>`<div class="alert ${a.type==='green'?'green':a.type==='amber'?'amber':''}">
+      <div class="alert-t">${esc(a.title)}</div>
+      <div class="alert-b">${esc(a.body)}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+/* ── plan ───────────────────────────────────────────── */
+function vPlan(){
+  let out='',lastBlk='';
+  W.forEach(w=>{
+    if(w.blk!==lastBlk){out+=`<div class="blk">${esc(w.blk)}</div>`;lastBlk=w.blk;}
+    const days=wkDays(w.n),peak=Math.max(...days.map(km),1);
+    const done=days.filter(d=>{const l=logOf(d);return l&&(l.st==='d'||l.st==='p');}).length;
+    const now=w.n===ALL[TIDX].wn;
+    out+=`<button class="wrow${now?' now':''}" data-w="${w.n}">
+      <span class="wn">${String(w.n).padStart(2,'0')}</span>
+      <span class="wmid">
+        <span class="wt">${esc(w.lb)}</span>
+        <span class="wsub">${esc(w.rng)} · ${esc(w.tot)} · ${done}/7</span>
+      </span>
+      <span class="wbars">${days.map(d=>`<i style="height:${km(d)?Math.max(2,Math.round(km(d)/peak*22)):1}px"></i>`).join('')}</span>
+    </button>`;
+  });
+  return out;
+}
+
+/* ── stats ──────────────────────────────────────────── */
+function vStats(){
+  const logs=gl();
+  const done=ALL.filter(d=>logs[dk(d)]&&logs[dk(d)].st==='d').length;
+  const part=ALL.filter(d=>logs[dk(d)]&&logs[dk(d)].st==='p').length;
+  const skip=ALL.filter(d=>logs[dk(d)]&&logs[dk(d)].st==='s').length;
+  const pct=Math.round((done+part)/ALL.length*100)||0;
+  const totKm=Object.values(logs).reduce((s,l)=>s+(parseFloat(dn(l.ad||''))||0),0);
+
+  const goal=ALL.find(d=>d.type==='g'),race=ALL.find(d=>d.type==='r');
+  const dd=x=>x?Math.max(0,Math.ceil((pd(x.day)-TODAY)/86400000)):0;
+
+  return `
+  <div class="big">
+    <div class="big-n">${dd(goal)}</div>
+    <div class="big-l">Days to the 40km attempt</div>
+  </div>
+  <div class="pbar"><i style="width:${pct}%"></i></div>
+  <div class="head"><span class="mono">Plan progress · ${pct}%</span></div>
+
+  <div class="g4">
+    <div><div class="gv">${done}</div><div class="gl">Completed</div></div>
+    <div><div class="gv">${part}</div><div class="gl">Partial</div></div>
+    <div><div class="gv">${skip}</div><div class="gl">Skipped</div></div>
+    <div><div class="gv">${ALL.length-done-part-skip}</div><div class="gl">Remaining</div></div>
+    <div><div class="gv">${Math.round(totKm)}<span style="font-size:15px;color:var(--grey)">KM</span></div><div class="gl">Distance logged</div></div>
+    <div><div class="gv">${dd(race)}</div><div class="gl">Days to 30km race</div></div>
+  </div>
+
+  <div class="head"><span class="mono">Goal events</span></div>
+  ${race?`<div class="evrow"><span class="evn">30km Race</span><span class="evd">${esc(race.day)}</span></div>`:''}
+  ${goal?`<div class="evrow"><span class="evn">40km Attempt</span><span class="evd">${esc(goal.day)}</span></div>`:''}
+
+  <div class="head"><span class="mono">Tools</span></div>
+  <button class="linkrow" data-jump="1"><span>Jump to today</span><span>${esc(ALL[TIDX].day)}</span></button>`;
+}
+
+/* ── sheets ─────────────────────────────────────────── */
+const sheetEl=()=>document.getElementById('sheet');
+function openSheet(html){
+  sheetEl().innerHTML='<button class="sheet-close" data-close-sheet="1" aria-label="Close">×</button>'+html;
+  sheetEl().classList.add('open');
+  document.getElementById('scrim').classList.add('open');
+  sheetEl().scrollTop=0;
+}
+function closeSheet(){
+  sheetEl().classList.remove('open');
+  document.getElementById('scrim').classList.remove('open');
+}
+
+function strBlock(o){
+  return `<div class="str">
+    <button class="str-t str-toggle" data-stracc="1" aria-expanded="false" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:none;padding:0;text-align:left;color:inherit">
+      <span>${esc(o.t)}</span><span class="acc-chev">▾</span>
+    </button>
+    <div class="str-s">${esc(o.s)}</div>
+    <div class="str-body" hidden>
+      <div class="str-e"><div class="str-ed">Warm-up</div><div class="str-ec">${esc(o.w)}</div></div>
+      ${o.e.map(x=>`<div class="str-e">
+        <div class="str-en">${esc(x[0])}</div>
+        <div class="str-ed">${esc(x[1])}</div>
+        <div class="str-ec">${esc(x[2])}</div>
+      </div>`).join('')}
+      <div class="str-e"><div class="str-ed">Cool-down</div><div class="str-ec">${esc(o.c)}</div></div>
+    </div>
+  </div>`;
+}
+
+function openLog(){
+  const d=ALL[selIdx],l=logOf(d)||{};
+  openSheet(`
+    <div class="sh-top">
+      <div class="sh-t">${esc(d.tag)}</div>
+      <div class="sh-s">${esc(d.day)} · ${esc(d.km||'no distance')} · ${TYPE[d.type]||''}</div>
+    </div>
+    <p style="font-size:13.5px;color:var(--grey);line-height:1.6;margin:0 0 20px">${esc(d.session)}</p>
+    ${d.sA?strBlock(SA):''}${d.sB?strBlock(SB):''}
+    <div class="fld">
+      <label>Status</label>
+      <div class="seg" id="segSt">
+        <button data-st="d" class="${l.st==='d'?'on':''}">Done</button>
+        <button data-st="p" class="${l.st==='p'?'on':''}">Partial</button>
+        <button data-st="s" class="${l.st==='s'?'on':''}">Skipped</button>
+      </div>
+    </div>
+    <div class="fld g2">
+      <div><label for="fAd">Planned distance: ${esc(d.km||'—')}</label><input class="inp" id="fAd" value="${esc(l.ad||'')}" placeholder="${esc(d.km||'—')}"></div>
+      <div><label for="fAt">Planned time: ${esc(gt(d.type,d.km)||'—')}</label><input class="inp" id="fAt" value="${esc(l.at||'')}" placeholder="${esc(gt(d.type,d.km)||'—')}"></div>
+    </div>
+    <div class="fld">
+      <label for="fN">Notes</label>
+      <textarea class="inp" id="fN" placeholder="Terrain, weather, fuelling, how the legs held up…">${esc(l.n||'')}</textarea>
+    </div>
+    <div id="adaptBox"></div>
+    <button class="act" id="fSave">Save</button>
+    ${l.st?'<button class="act ghost" id="fClear">Clear log</button>':''}
+  `);
+
+  let st=l.st||null;
+  const adapt=()=>{
+    const box=document.getElementById('adaptBox');
+    box.innerHTML=(st==='s'&&ADAPT[d.type])
+      ?`<div class="alert" style="margin:0 0 18px"><div class="alert-t">If you miss this</div><div class="alert-b">${esc(ADAPT[d.type])}</div></div>`:'';
+  };
+  adapt();
+
+  document.getElementById('segSt').onclick=e=>{
+    const b=e.target.closest('[data-st]');if(!b)return;
+    st=b.dataset.st;
+    [...b.parentNode.children].forEach(c=>c.classList.toggle('on',c===b));
+    adapt();
+  };
+  document.getElementById('fSave').onclick=async()=>{
+    const logs=gl(),k=dk(d);
+    logs[k]={st:st||'d',ad:document.getElementById('fAd').value.trim(),
+             at:document.getElementById('fAt').value.trim(),n:document.getElementById('fN').value.trim()};
+    await sl(logs);saveToDB(k,logs[k]);
+    closeSheet();render();
+  };
+  const c=document.getElementById('fClear');
+  if(c)c.onclick=async()=>{
+    const logs=gl(),k=dk(d);delete logs[k];
+    await sl(logs);saveToDB(k,{st:null,at:null,ad:null,n:null});
+    closeSheet();render();
+  };
+}
+
+function openWeek(n){
+  const w=W[n-1],days=wkDays(n),base=(n-1)*7;
+  openSheet(`
+    <div class="sh-top">
+      <div class="sh-t">${esc(w.lb)}</div>
+      <div class="sh-s">Week ${n} · ${esc(w.rng)} · ${esc(w.tot)} · ${esc(w.tof)}</div>
+    </div>
+    ${days.map((d,i)=>{
+      const l=logOf(d);
+      return `<button class="dayrow" data-go="${base+i}">
+        <span class="wn">${esc(dow(d.day))} ${esc(d.day.replace(/^\w+\s/,''))}</span>
+        <span class="wmid"><span class="dr-t">${esc(d.tag)}</span>
+        <span class="dr-s">${TYPE[d.type]||''}${l?' · '+(l.st==='d'?'done':l.st==='p'?'partial':'skipped'):''}</span></span>
+        <span class="dr-k">${esc(d.km||'—')}</span>
+      </button>`;
+    }).join('')}
+  `);
+  sheetEl().onclick=e=>{
+    const b=e.target.closest('[data-go]');if(!b)return;
+    selIdx=+b.dataset.go;tab='today';closeSheet();render();
+  };
+}
+
+function openWeeksPicker(){
+  openSheet(`
+    <div class="sh-top">
+      <div class="sh-t">All Weeks</div>
+      <div class="sh-s">Tap a week to jump</div>
+    </div>
+    ${W.map(w=>{
+      const now=w.n===wkOf(TIDX);
+      return `<button class="wrow${now?' now':''}" data-pickweek="${w.n}">
+        <span class="wn">${String(w.n).padStart(2,'0')}</span>
+        <span class="wmid"><span class="wt">${esc(w.lb)}</span><span class="wsub">${esc(w.rng)} · ${esc(w.tot)}</span></span>
+      </button>`;
+    }).join('')}
+  `);
+}
+
+function openRecal(){
+  const a=getRecalibration();
+  openSheet(`
+    <div class="sh-top">
+      <div class="sh-t">Recalibrate</div>
+      <div class="sh-s">Based on your last 14 days</div>
+    </div>
+    ${a.length?a.map(x=>`<div class="alert ${x.type==='green'?'green':x.type==='amber'?'amber':''}" style="margin:0 0 12px">
+      <div class="alert-t">${esc(x.title)}</div><div class="alert-b">${esc(x.body)}</div></div>`).join('')
+    :'<p style="color:var(--grey);font-size:13px;line-height:1.6">Nothing to flag. Log a few more sessions and this will start reading your consistency, missed long runs, and any pain mentioned in your notes.</p>'}
+  `);
+}
+
+/* ── render ─────────────────────────────────────────── */
+function render(){
+  const d=ALL[selIdx];
+  document.getElementById('strip').innerHTML=tab==='today'?strip():'';
+  document.getElementById('view').innerHTML=tab==='today'?vToday():tab==='plan'?vPlan():vStats();
+  [...document.querySelectorAll('.tb')].forEach(t=>t.classList.toggle('on',t.dataset.tab===tab));
+  if(typeof initStravaUI==='function')initStravaUI();
+}
+
+/* top-bar Strava button is plain text now */
+function updateStravaBtn(connected,name){
+  const b=document.getElementById('stravaBtn');if(!b)return;
+  b.textContent=connected?(name?name+' · Strava':'Strava'):'Connect Strava';
+}
+
+/* shims so the preserved Strava code keeps working */
+function rStats(){render();}
+function rMonth(){}
+function rWeek(){}
+function rSidebar(){}
+
+document.getElementById('tabs').onclick=e=>{
+  const b=e.target.closest('.tb');if(!b)return;
+  tab=b.dataset.tab;
+  if(tab==='today')selIdx=TIDX;
+  render();
+};
+document.body.addEventListener('click',e=>{
+  const acc=e.target.closest('[data-acc]');
+  if(acc){
+    const wrap=acc.parentNode,body=acc.nextElementSibling,open=body.hasAttribute('hidden');
+    if(open){body.removeAttribute('hidden');wrap.setAttribute('data-open','');}
+    else{body.setAttribute('hidden','');wrap.removeAttribute('data-open');}
+    acc.setAttribute('aria-expanded',open);
+    acc.querySelector('.acc-chev').textContent=open?'▴':'▾';
+    return;
+  }
+  const stracc=e.target.closest('[data-stracc]');
+  if(stracc){
+    const body=stracc.parentNode.querySelector('.str-body'),open=body.hasAttribute('hidden');
+    if(open)body.removeAttribute('hidden');else body.setAttribute('hidden','');
+    stracc.setAttribute('aria-expanded',open);
+    stracc.querySelector('.acc-chev').textContent=open?'▴':'▾';
+    return;
+  }
+  const day=e.target.closest('[data-i]');
+  if(day){selIdx=+day.dataset.i;render();return;}
+  if(e.target.closest('[data-log]')){openLog();return;}
+  const wr=e.target.closest('[data-w]');
+  if(wr){openWeek(+wr.dataset.w);return;}
+  if(e.target.closest('[data-recal]')){openRecal();return;}
+  if(e.target.closest('[data-jump]')){selIdx=TIDX;tab='today';render();return;}
+  if(e.target.closest('[data-openweeks]')){openWeeksPicker();return;}
+  if(e.target.closest('[data-back-today]')){selIdx=TIDX;render();return;}
+  const pw=e.target.closest('[data-pickweek]');
+  if(pw){
+    const n=+pw.dataset.pickweek,curWk=wkOf(selIdx),offset=selIdx-(curWk-1)*7;
+    selIdx=(n-1)*7+offset;tab='today';closeSheet();render();return;
+  }
+  if(e.target.closest('[data-close-sheet]')){closeSheet();return;}
+});
+
+let swipeStartX=null;
+document.addEventListener('touchstart',e=>{
+  if(e.target.closest('#stripCols'))swipeStartX=e.touches[0].clientX;
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(swipeStartX===null)return;
+  const dx=e.changedTouches[0].clientX-swipeStartX;
+  swipeStartX=null;
+  if(Math.abs(dx)<40)return;
+  const curWk=wkOf(selIdx),newWk=curWk+(dx<0?1:-1);
+  if(newWk<1||newWk>22)return;
+  const offset=selIdx-(curWk-1)*7;
+  selIdx=(newWk-1)*7+offset;
+  render();
+},{passive:true});
+document.getElementById('scrim').onclick=closeSheet;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSheet();closeStrava();}});
+
+render();
+setTimeout(()=>{initDB().catch(e=>console.warn('DB init failed',e));},100);
+handleStravaCallback();
+
+</script>
+</body>
+</html>
