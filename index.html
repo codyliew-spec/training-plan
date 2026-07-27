@@ -74,7 +74,7 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .strip-scroll{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
 .strip-scroll::-webkit-scrollbar{display:none}
 .strip-film{display:flex;gap:5px;width:max-content}
-.hero-eyebrow .is-today{color:var(--signal)}
+.hero-eyebrow .mono.is-today{color:var(--signal)}
 .scol{display:flex;flex-direction:column;padding:0;flex:0 0 var(--colw,44px)}
 .scol-bar{display:flex;align-items:flex-end;height:52px}
 .scol-bar i{width:100%;background:var(--grey);display:block;transition:background .15s}
@@ -101,6 +101,14 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .acc-body .str{border:none;border-top:1px solid var(--rule);padding:13px 0;margin:0}
 .acc-body .str:first-child{border-top:none;padding-top:6px}
 .spec-acc[data-open]{border-bottom:1px solid var(--rule)}
+.vol{padding:14px 0 6px}
+.vol-metric + .vol-metric{margin-top:16px}
+.vol-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.vol-top .mono{color:var(--grey)}
+.vol-v{font-family:var(--fm);font-size:16px;font-weight:600;color:var(--bone)}
+.vol-u{font-family:var(--fm);font-size:11px;color:var(--dim);margin-left:5px;font-weight:400}
+.vol-bar{height:4px;background:var(--rule);overflow:hidden}
+.vol-bar i{display:block;height:100%;background:var(--signal);transition:width .4s ease}
 
 /* ── hero session ── */
 .hero{padding:22px var(--pad) 0}
@@ -1088,6 +1096,43 @@ function stepDay(dir){
 }
 
 /* ── today ──────────────────────────────────────────── */
+function parseDur(s){
+  if(!s)return 0; s=(''+s).toLowerCase().trim();
+  const hm=s.match(/(\d+)\s*[:h]\s*(\d{1,2})(?!\d)/); if(hm)return (+hm[1])*60+(+hm[2]);
+  let m=0,matched=false;
+  const h=s.match(/(\d+(?:\.\d+)?)\s*h/); if(h){m+=parseFloat(h[1])*60;matched=true;}
+  const mn=s.match(/(\d+)\s*m/); if(mn){m+=+mn[1];matched=true;}
+  if(!matched){const n=parseFloat(s); if(!isNaN(n))m=n;}
+  return Math.round(m);
+}
+function fmtDur(min){ if(!min)return '0m'; const h=Math.floor(min/60),m=min%60; return h?(h+'h'+(m?(' '+m+'m'):'')):(m+'m'); }
+function weekActuals(wk){
+  let dist=0,mins=0;
+  wkDays(wk.n).forEach(d=>{ const l=logOf(d); if(!l)return;
+    const kd=parseFloat((String(l.ad||'').match(/\d+(?:\.\d+)?/)||[0])[0]); if(!isNaN(kd))dist+=kd;
+    mins+=parseDur(l.at||'');
+  });
+  return {dist:Math.round(dist*10)/10, mins};
+}
+function volCompare(wk){
+  const a=weekActuals(wk);
+  const pKm=parseFloat((String(wk.tot).match(/[\d.]+/)||['0'])[0])||0;
+  const tn=(String(wk.tof).match(/[\d.]+/g)||[]).map(Number);
+  const pMin=tn.length?Math.round(tn.reduce((x,y)=>x+y,0)/tn.length*60):0;
+  const dPct=pKm?Math.min(100,Math.round(a.dist/pKm*100)):0;
+  const tPct=pMin?Math.min(100,Math.round(a.mins/pMin*100)):0;
+  return `<div class="vol">
+    <div class="vol-metric">
+      <div class="vol-top"><span class="mono">Distance</span><span class="vol-v">${a.dist}<span class="vol-u">/ ${pKm}km</span></span></div>
+      <div class="vol-bar"><i style="width:${dPct}%"></i></div>
+    </div>
+    <div class="vol-metric">
+      <div class="vol-top"><span class="mono">Time on feet</span><span class="vol-v">${fmtDur(a.mins)}<span class="vol-u">/ ${esc(wk.tof)}</span></span></div>
+      <div class="vol-bar"><i style="width:${tPct}%"></i></div>
+    </div>
+  </div>`;
+}
+
 function vToday(){
   const d=ALL[selIdx],l=logOf(d),wk=W[d.wn-1];
   const tof=gt(d.type,d.km);
@@ -1120,7 +1165,10 @@ function vToday(){
         <div class="acc-body" hidden>${strs.map(strBlock).join('')}</div>
       </div>`:''}
       <div class="spec-row"><span class="mono">Block</span><span class="spec-v">${esc(d.wblk)}</span></div>
-      <div class="spec-row"><span class="mono">Week volume</span><span class="spec-v">${esc(wk.tot)} · ${esc(wk.tof)}</span></div>
+      <div class="spec-acc">
+        <button class="spec-row spec-acc-h" data-acc="1" aria-expanded="false"><span class="mono">Week volume</span><span class="spec-v">${esc(wk.tot)} · ${esc(wk.tof)} <span class="acc-chev">▾</span></span></button>
+        <div class="acc-body" hidden>${volCompare(wk)}</div>
+      </div>
       ${l&&(l.ad||l.at)?`<div class="spec-row"><span class="mono">Logged</span><span class="spec-v">${esc(l.ad||'')}${l.ad&&l.at?' · ':''}${esc(l.at||'')}</span></div>`:''}
     </div>
 
