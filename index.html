@@ -71,11 +71,11 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 
 /* ── week strip: the signature ── */
 .strip{padding:16px var(--pad) 0}
-.strip-vp{overflow:hidden;width:100%}
-.strip-track{display:flex}
-.strip-track>.wkgrid{flex:0 0 100%}
-.wkgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.scol{display:flex;flex-direction:column;padding:0}
+.strip-scroll{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none}
+.strip-scroll::-webkit-scrollbar{display:none}
+.strip-film{display:flex;gap:5px;width:max-content}
+.hero-eyebrow .is-today{color:var(--signal)}
+.scol{display:flex;flex-direction:column;padding:0;flex:0 0 var(--colw,44px)}
 .scol-bar{display:flex;align-items:flex-end;height:52px}
 .scol-bar i{width:100%;background:var(--grey);display:block;transition:background .15s}
 .scol-bar u{width:100%;height:2px;align-self:flex-end;background:var(--rule)}
@@ -1025,61 +1025,66 @@ const dow=s=>s.slice(0,2).toUpperCase();
 function logOf(d){return gl()[dk(d)]||null;}
 
 /* ── week strip ─────────────────────────────────────── */
-function wkGridHTML(wn, selHi){
-  const days=wkDays(wn), base=(wn-1)*7, peak=Math.max(...days.map(km),1);
-  return `<div class="wkgrid">${days.map((d,i)=>{
-    const g=base+i,l=logOf(d);
-    const h=km(d)?Math.max(8,Math.round(km(d)/peak*52)):0;
-    const mark=l&&l.st==='d'?'●':l&&l.st==='p'?'◐':l&&l.st==='s'?'×':'';
-    const cls=['scol',g===selHi?'sel':'',isToday(g)?'today':'',l&&l.st==='d'?'done':'',l&&l.st==='s'?'skip':''].join(' ');
-    return `<button class="${cls}" data-i="${g}"><span class="scol-bar">${km(d)?`<i style="height:${h}px"></i>`:'<u></u>'}</span><span class="scol-d">${dow(d.day)}<em>${mark}</em></span></button>`;
-  }).join('')}</div>`;
+const GPEAK=Math.max(1,...ALL.map(km));
+
+function filmCol(g){
+  const d=ALL[g],l=logOf(d);
+  const h=km(d)?Math.max(8,Math.round(km(d)/GPEAK*52)):0;
+  const mark=l&&l.st==='d'?'●':l&&l.st==='p'?'◐':l&&l.st==='s'?'×':'';
+  const cls=['scol',g===selIdx?'sel':'',isToday(g)?'today':'',l&&l.st==='d'?'done':'',l&&l.st==='s'?'skip':''].join(' ');
+  return `<button class="${cls}" data-i="${g}"><span class="scol-bar">${km(d)?`<i style="height:${h}px"></i>`:'<u></u>'}</span><span class="scol-d">${dow(d.day)}<em>${mark}</em></span></button>`;
 }
 
-function capHTML(){
-  const onTodayWeek=wkOf(selIdx)===wkOf(TIDX);
-  return `<button data-openweeks="1" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Week ${String(wkOf(selIdx)).padStart(2,'0')} / 22 · <b>${esc(ALL[selIdx].wph)}</b> <span style="color:var(--dim)">▾</span></button>${onTodayWeek?'':'<button data-back-today="1" class="mono" style="color:var(--signal);white-space:nowrap;flex:none">← Back to Today</button>'}`;
+function capHTML(vidx){
+  const wn=wkOf(vidx), showBack=selIdx!==TIDX;
+  return `<button data-openweeks="1" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Week ${String(wn).padStart(2,'0')} / 22 · <b>${esc(ALL[vidx].wph)}</b> <span style="color:var(--dim)">▾</span></button>${showBack?'<button data-back-today="1" class="mono" style="color:var(--signal);white-space:nowrap;flex:none">← Back to Today</button>':''}`;
 }
 
 function strip(){
+  const cols=ALL.map((_,g)=>filmCol(g)).join('');
   return `<div class="strip">
-    <div class="strip-cap mono" style="display:flex;justify-content:space-between;align-items:center;gap:10px">${capHTML()}</div>
-    <div class="strip-vp"><div class="strip-track" id="stripTrack">${wkGridHTML(wkOf(selIdx),selIdx)}</div></div>
+    <div class="strip-cap mono" style="display:flex;justify-content:space-between;align-items:center;gap:10px">${capHTML(selIdx)}</div>
+    <div class="strip-scroll" id="stripScroll"><div class="strip-film">${cols}</div></div>
   </div>`;
 }
 
-function updateCaption(){ const cap=document.querySelector('.strip-cap'); if(cap)cap.innerHTML=capHTML(); }
-function updateMarker(){ document.querySelectorAll('#stripTrack .scol').forEach(c=>c.classList.toggle('sel',+c.dataset.i===selIdx)); }
+function setCap(vidx){ const cap=document.querySelector('.strip-cap'); if(cap)cap.innerHTML=capHTML(vidx); }
+function updateMarker(){ document.querySelectorAll('#stripScroll .scol').forEach(c=>c.classList.toggle('sel',+c.dataset.i===selIdx)); }
+function centerVisibleIdx(){
+  const sc=document.getElementById('stripScroll'); if(!sc)return selIdx;
+  const center=sc.scrollLeft+sc.clientWidth/2; let best=selIdx,bd=Infinity;
+  sc.querySelectorAll('.scol').forEach(c=>{const cc=c.offsetLeft+c.offsetWidth/2,dd=Math.abs(cc-center);if(dd<bd){bd=dd;best=+c.dataset.i;}});
+  return best;
+}
+function refreshCap(){ setCap(centerVisibleIdx()); }
 
-let sliding=false, slideTimer=null;
-function slideWeek(oldWk,newWk,dir){
-  const track=document.getElementById('stripTrack');
-  if(!track){document.getElementById('strip').innerHTML=strip();return;}
-  sliding=true; updateCaption();
-  const prevIdx=selIdx-dir;
-  const a=dir>0?wkGridHTML(oldWk,prevIdx):wkGridHTML(newWk,selIdx);
-  const b=dir>0?wkGridHTML(newWk,selIdx):wkGridHTML(oldWk,prevIdx);
-  const vp=track.parentElement.clientWidth;
-  track.style.transition='none';
-  track.innerHTML=a+b;
-  [...track.children].forEach(g=>{g.style.flex='0 0 '+vp+'px';g.style.width=vp+'px';});
-  track.style.transform='translateX('+(dir>0?0:-vp)+'px)';
-  void track.offsetWidth;
-  track.style.transition='transform .3s cubic-bezier(.32,.72,0,1)';
-  track.style.transform='translateX('+(dir>0?-vp:0)+'px)';
-  clearTimeout(slideTimer);
-  slideTimer=setTimeout(()=>{ if(tab==='today')document.getElementById('strip').innerHTML=strip(); sliding=false; },330);
+let capRaf=null;
+function initFilm(){
+  const sc=document.getElementById('stripScroll'); if(!sc)return;
+  const cw=Math.max(36,Math.floor((sc.clientWidth-30)/7));
+  sc.style.setProperty('--colw',cw+'px');
+  scrollChartToSel(false);
+  sc.onscroll=()=>{ if(capRaf)cancelAnimationFrame(capRaf); capRaf=requestAnimationFrame(refreshCap); };
+}
+function scrollChartToSel(smooth){
+  const sc=document.getElementById('stripScroll'); if(!sc)return;
+  const col=sc.querySelector('.scol[data-i="'+selIdx+'"]'); if(!col)return;
+  const target=Math.max(0,col.offsetLeft-(sc.clientWidth-col.offsetWidth)/2);
+  try{sc.scrollTo({left:target,behavior:smooth?'smooth':'auto'});}catch(e){sc.scrollLeft=target;}
+  setCap(selIdx);
 }
 
+function selectDay(idx){
+  selIdx=idx;
+  document.getElementById('view').innerHTML=vToday();
+  updateMarker(); refreshCap();
+}
 function stepDay(dir){
   if(tab!=='today')return;
-  const next=selIdx+dir;
-  if(next<0||next>=ALL.length)return;
-  const oldWk=wkOf(selIdx),newWk=wkOf(next);
+  const next=selIdx+dir; if(next<0||next>=ALL.length)return;
   selIdx=next;
   document.getElementById('view').innerHTML=vToday();
-  if(newWk!==oldWk){ if(sliding){document.getElementById('strip').innerHTML=strip();} else slideWeek(oldWk,newWk,dir); }
-  else updateMarker();
+  updateMarker(); scrollChartToSel(true);
 }
 
 /* ── today ──────────────────────────────────────────── */
@@ -1097,7 +1102,7 @@ function vToday(){
   return `
   <div class="hero">
     <div class="hero-eyebrow">
-      <span class="mono">${esc(d.day)}${isToday(selIdx)?' · Today':''}</span>
+      <span class="mono${isToday(selIdx)?' is-today':''}">${esc(d.day)}${isToday(selIdx)?' · Today':''}</span>
       <span class="mono type">${TYPE[d.type]||''}</span>
     </div>
     <div class="hero-num">${heroNum}</div>
@@ -1333,6 +1338,7 @@ function render(){
   document.getElementById('strip').innerHTML=tab==='today'?strip():'';
   document.getElementById('view').innerHTML=tab==='today'?vToday():tab==='plan'?vPlan():vStats();
   [...document.querySelectorAll('.tb')].forEach(t=>t.classList.toggle('on',t.dataset.tab===tab));
+  if(tab==='today')initFilm();
   if(typeof initStravaUI==='function')initStravaUI();
 }
 
@@ -1373,7 +1379,7 @@ document.body.addEventListener('click',e=>{
     return;
   }
   const day=e.target.closest('[data-i]');
-  if(day){selIdx=+day.dataset.i;render();return;}
+  if(day){selectDay(+day.dataset.i);return;}
   if(e.target.closest('[data-log]')){openLog();return;}
   const wr=e.target.closest('[data-w]');
   if(wr){openWeek(+wr.dataset.w);return;}
@@ -1392,9 +1398,8 @@ document.body.addEventListener('click',e=>{
 let tsX=null,tsY=null;
 document.addEventListener('touchstart',e=>{
   if(tab!=='today'){tsX=null;return;}
-  const inChart=e.target.closest('.strip-vp');
   const inCard=e.target.closest('#view')&&!e.target.closest('.sheet');
-  if(inChart||inCard){tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;} else tsX=null;
+  if(inCard){tsX=e.touches[0].clientX;tsY=e.touches[0].clientY;} else tsX=null;
 },{passive:true});
 document.addEventListener('touchend',e=>{
   if(tsX===null)return;
@@ -1405,6 +1410,7 @@ document.addEventListener('touchend',e=>{
 },{passive:true});
 document.getElementById('scrim').onclick=closeSheet;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSheet();closeStrava();}});
+window.addEventListener('resize',()=>{if(tab==='today'){const sc=document.getElementById('stripScroll');if(sc){const cw=Math.max(36,Math.floor((sc.clientWidth-30)/7));sc.style.setProperty('--colw',cw+'px');scrollChartToSel(false);}}});
 
 render();
 setTimeout(()=>{initDB().catch(e=>console.warn('DB init failed',e));},100);
