@@ -109,6 +109,11 @@ button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:p
 .vol-u{font-family:var(--fm);font-size:11px;color:var(--dim);margin-left:5px;font-weight:400}
 .vol-bar{height:4px;background:var(--rule);overflow:hidden}
 .vol-bar i{display:block;height:100%;background:var(--signal);transition:width .4s ease}
+.prop{border:1px solid var(--rule);border-left:2px solid var(--signal);padding:13px 14px;margin-bottom:12px}
+.prop-t{font-family:var(--fd);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.02em}
+.prop-b{font-size:12.5px;color:var(--grey);line-height:1.55;margin:6px 0 12px}
+.prop-apply{width:100%;padding:12px;background:var(--bone);color:var(--void);font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.prop-apply:active{opacity:.75}
 
 /* ── hero session ── */
 .hero{padding:22px var(--pad) 0}
@@ -1036,7 +1041,7 @@ function logOf(d){return gl()[dk(d)]||null;}
 const GPEAK=Math.max(1,...ALL.map(km));
 
 function filmCol(g){
-  const d=ALL[g],l=logOf(d);
+  const d=D(g),l=logOf(d);
   const h=km(d)?Math.max(8,Math.round(km(d)/GPEAK*52)):0;
   const mark=l&&l.st==='d'?'●':l&&l.st==='p'?'◐':l&&l.st==='s'?'×':'';
   const cls=['scol',g===selIdx?'sel':'',isToday(g)?'today':'',l&&l.st==='d'?'done':'',l&&l.st==='s'?'skip':''].join(' ');
@@ -1134,9 +1139,9 @@ function volCompare(wk){
 }
 
 function vToday(){
-  const d=ALL[selIdx],l=logOf(d),wk=W[d.wn-1];
+  const d=D(selIdx),l=logOf(d),wk=W[d.wn-1];
   const tof=gt(d.type,d.km);
-  const alerts=getRecalibration().slice(0,2);
+  const alerts=coachAlerts().slice(0,2);
 
   const heroNum=km(d)
     ? `${dn(d.km)}<small>KM</small>`
@@ -1151,7 +1156,7 @@ function vToday(){
       <span class="mono type">${TYPE[d.type]||''}</span>
     </div>
     <div class="hero-num">${heroNum}</div>
-    <p class="hero-sess">${esc(d.session)}</p>
+    ${d._adj?'<div class="mono" style="color:var(--signal);margin:6px 0 2px">\u27f3 Adjusted by review</div>':''}<p class="hero-sess">${esc(d.session)}</p>
     ${d.note?`<p class="hero-note">${esc(d.note)}</p>`:''}
 
     <div class="spec">
@@ -1336,12 +1341,12 @@ function openWeek(n){
       <div class="sh-s">Week ${n} · ${esc(w.rng)} · ${esc(w.tot)} · ${esc(w.tof)}</div>
     </div>
     ${days.map((d,i)=>{
-      const l=logOf(d);
+      const dd=D(base+i),l=logOf(dd);
       return `<button class="dayrow" data-go="${base+i}">
-        <span class="wn">${esc(dow(d.day))} ${esc(d.day.replace(/^\w+\s/,''))}</span>
-        <span class="wmid"><span class="dr-t">${esc(d.tag)}</span>
-        <span class="dr-s">${TYPE[d.type]||''}${l?' · '+(l.st==='d'?'done':l.st==='p'?'partial':'skipped'):''}</span></span>
-        <span class="dr-k">${esc(d.km||'—')}</span>
+        <span class="wn">${esc(dow(dd.day))} ${esc(dd.day.replace(/^\w+\s/,''))}</span>
+        <span class="wmid"><span class="dr-t">${esc(dd.tag)}${dd._adj?' <span style="color:var(--signal)">\u27f3</span>':''}</span>
+        <span class="dr-s">${TYPE[dd.type]||''}${l?' · '+(l.st==='d'?'done':l.st==='p'?'partial':'skipped'):''}</span></span>
+        <span class="dr-k">${esc(dd.km||'—')}</span>
       </button>`;
     }).join('')}
   `);
@@ -1367,16 +1372,116 @@ function openWeeksPicker(){
   `);
 }
 
+/* ===== Recalibration v2: overrides + smart classifier ===== */
+let OV={}; try{OV=JSON.parse(localStorage.getItem('road40_ov_v1')||'{}');}catch(e){OV={};}
+function saveOV(){ try{localStorage.setItem('road40_ov_v1',JSON.stringify(OV));}catch(e){} }
+function D(i){ const o=OV[dk(ALL[i])]; return o?Object.assign({},ALL[i],o):ALL[i]; }
+function ovCount(){ return Object.keys(OV).length; }
+function logAt(i){ return gl()[dk(ALL[i])]||null; }
+function planKm(i){ return parseFloat(dn(ALL[i].km||''))||0; }
+function actKm(log){ return log?(parseFloat((String(log.ad||'').match(/\d+(?:\.\d+)?/)||[0])[0])||0):0; }
+const dlabel=i=>ALL[i]?ALL[i].day:'';
+
+function findShift(i){
+  const pk=planKm(i); if(pk<8)return null;
+  for(const off of [1,-1,2,-2]){
+    const j=i+off; if(j<0||j>=ALL.length)continue;
+    const lj=logAt(j); if(!lj||(lj.st!=='d'&&lj.st!=='p'))continue;
+    if(actKm(lj)>=pk*0.8 && actKm(lj)>planKm(j)*1.4) return {to:j,km:actKm(lj)};
+  }
+  return null;
+}
+function nearbyActivity(i,r){ for(let j=Math.max(0,i-r);j<=Math.min(ALL.length-1,i+r);j++){ if(logAt(j))return true; } return false; }
+function classify(i){
+  const log=logAt(i), dt=DATES[i], past=dt&&dt<TODAY, isT=dt&&dt.getTime()===TODAY.getTime();
+  if(log&&log.st==='d')return{s:'done'};
+  if(log&&log.st==='p')return{s:'partial'};
+  if(ALL[i].type==='d')return{s:log?'rest-done':'rest'};
+  if(log&&log.st==='s'){ const sh=findShift(i); return sh?{s:'shifted',to:sh.to,km:sh.km}:{s:'missed'}; }
+  if(!log&&past){ const sh=findShift(i); if(sh)return{s:'shifted',to:sh.to,km:sh.km}; return nearbyActivity(i,3)?{s:'missed'}:{s:'untracked'}; }
+  return{s:isT?'today':'upcoming'};
+}
+function nextIdxWhere(fromI,pred){
+  for(let j=fromI+1;j<ALL.length;j++){ if(DATES[j]&&DATES[j]>=TODAY&&pred(j))return j; }
+  return -1;
+}
+function coachReview(){
+  const logs=gl(), shifts=[], misses=[];
+  for(let i=0;i<ALL.length;i++){
+    const dt=DATES[i]; if(!dt)continue; const diff=(TODAY-dt)/86400000;
+    if(diff<0||diff>21)continue;
+    if(ALL[i].type!=='l'&&ALL[i].type!=='q')continue;
+    const c=classify(i);
+    if(c.s==='shifted')shifts.push({i,to:c.to,km:c.km});
+    else if(c.s==='missed')misses.push({i});
+  }
+  let injury=false,done=0,skip=0;
+  for(let i=0;i<ALL.length;i++){
+    const dt=DATES[i]; if(!dt)continue; const diff=(TODAY-dt)/86400000; if(diff<0||diff>14)continue;
+    const n=(logs[dk(ALL[i])]?.n||'').toLowerCase();
+    if(/pain|hurt|injur|strain|tweak|sore/.test(n))injury=true;
+    if(ALL[i].type==='d')continue;
+    const st=logs[dk(ALL[i])]?.st;
+    if(st==='d'||st==='p')done++; else if(st==='s')skip++;
+  }
+  const props=[];
+  shifts.forEach(sh=>{
+    const nh=nextIdxWhere(sh.to,j=>ALL[j].type==='q'||ALL[j].type==='l');
+    if(nh>=0 && !OV[dk(ALL[nh])]) props.push({id:'shift'+sh.i,
+      title:'Protect recovery after your shifted long run',
+      body:`Your long run landed on ${dlabel(sh.to)} instead of ${dlabel(sh.i)}. Your next hard session (${dlabel(nh)}) can become an easy run so the back-to-back load doesn't spike.`,
+      changes:[{dayKey:dk(ALL[nh]),patch:{type:'e',tag:'Easy (adjusted)',km:Math.max(5,Math.round(planKm(nh)*0.6))+'km',session:'Easy run — eased to protect recovery after your shifted long run.',_adj:1}}]});
+  });
+  if(injury){
+    const nq=nextIdxWhere(TIDX-1,j=>ALL[j].type==='q');
+    if(nq>=0 && !OV[dk(ALL[nq])]) props.push({id:'inj'+nq,
+      title:'Ease your next quality session',
+      body:`Recent notes mention pain or soreness. Your next quality session (${dlabel(nq)}) can become an easy run. If it persists, rest fully.`,
+      changes:[{dayKey:dk(ALL[nq]),patch:{type:'e',tag:'Easy (adjusted)',km:Math.max(5,Math.round(planKm(nq)*0.6))+'km',session:'Easy run — eased due to a pain/soreness note. Monitor closely.',_adj:1}}]});
+  }
+  misses.filter(m=>ALL[m.i].type==='l').forEach(m=>{
+    const nl=nextIdxWhere(TIDX-1,j=>ALL[j].type==='l');
+    if(nl>=0 && !OV[dk(ALL[nl])]) props.push({id:'miss'+m.i,
+      title:'Missed long run — protect the next one',
+      body:`You missed the long run on ${dlabel(m.i)}. Don't double up. Your next long run (${dlabel(nl)}) can be flagged as the week's priority — keep it, but no need to make up the distance.`,
+      changes:[{dayKey:dk(ALL[nl]),patch:{note:'PRIORITY — replaces the long run you missed. Fuel and pace it well; do not add extra distance.',_adj:1}}]});
+  });
+  return {shifts,misses,injury,done,skip,props};
+}
+function coachAlerts(){
+  const r=coachReview(), a=[];
+  if(r.injury)a.push({type:'red',title:'Pain flagged in your notes',body:'Recent notes mention soreness or pain. Ease your next hard session and rest fully if it persists. Open "How am I doing" to apply an adjustment.'});
+  if(r.shifts.length)a.push({type:'green',title:'Shift recognized',body:'A key session was moved by a day or two and counted as done — the plan reads this as on-track, not missed.'});
+  if(r.misses.length)a.push({type:'amber',title:r.misses.length>1?r.misses.length+' key sessions missed':'A key session was missed',body:'Open "How am I doing" for the proposed adjustment. Don\'t double up to make up the distance.'});
+  if(!r.injury&&!r.misses.length&&r.done>=6&&r.skip===0)a.push({type:'green',title:'Strong consistency',body:'Six or more sessions done with no skips. Keep your easy days genuinely easy.'});
+  if(!a.length)a.push({type:'grey',title:'Plan on track',body:'No adjustments needed. Log your sessions and check back as your block progresses.'});
+  return a;
+}
+let PROPS=[];
+function applyProposal(id){
+  const p=PROPS.find(x=>x.id===id); if(!p)return;
+  p.changes.forEach(c=>{ OV[c.dayKey]=Object.assign({},OV[c.dayKey],c.patch); });
+  saveOV(); render(); openRecal();
+}
+function resetOverrides(){ OV={}; saveOV(); render(); openRecal(); }
+
 function openRecal(){
-  const a=getRecalibration();
+  const r=coachReview(); PROPS=r.props;
+  const pos=r.shifts.length?`<div class="alert green" style="margin:0 0 12px"><div class="alert-t">Recognized adjustments</div><div class="alert-b">${r.shifts.map(sh=>esc(dlabel(sh.i))+' long run was done '+esc(dlabel(sh.to))+' ('+sh.km+'km) — counted as complete, not missed.').join(' ')}</div></div>`:'';
+  const needs=[];
+  if(r.injury)needs.push('<div class="alert" style="margin:0 0 12px"><div class="alert-t">Pain flagged</div><div class="alert-b">Recent notes mention soreness or pain. Ease your next hard session; rest fully if it persists.</div></div>');
+  r.misses.forEach(m=>needs.push(`<div class="alert amber" style="margin:0 0 12px"><div class="alert-t">Missed ${esc(TYPE[ALL[m.i].type]||'session')}</div><div class="alert-b">${esc(dlabel(m.i))} wasn't logged and no nearby make-up run was found. Don't double up.</div></div>`));
+  const propHtml=PROPS.length?PROPS.map(p=>`<div class="prop"><div class="prop-t">${esc(p.title)}</div><div class="prop-b">${esc(p.body)}</div><button class="prop-apply" data-apply="${p.id}">Apply this adjustment</button></div>`).join(''):'';
+  const applied=ovCount()?`<button class="linkrow" data-resetov="1" style="border-top:1px solid var(--rule);margin-top:6px"><span>Reset all adjustments</span><span>${ovCount()} active</span></button>`:'';
   openSheet(`
     <div class="sh-top">
-      <div class="sh-t">Recalibrate</div>
-      <div class="sh-s">Based on your last 14 days</div>
+      <div class="sh-t">How am I doing</div>
+      <div class="sh-s">Reading your last 3 weeks</div>
     </div>
-    ${a.length?a.map(x=>`<div class="alert ${x.type==='green'?'green':x.type==='amber'?'amber':''}" style="margin:0 0 12px">
-      <div class="alert-t">${esc(x.title)}</div><div class="alert-b">${esc(x.body)}</div></div>`).join('')
-    :'<p style="color:var(--grey);font-size:13px;line-height:1.6">Nothing to flag. Log a few more sessions and this will start reading your consistency, missed long runs, and any pain mentioned in your notes.</p>'}
+    ${pos}${needs.join('')}
+    ${PROPS.length?`<div class="sec-label" style="margin:18px 0 6px">Proposed adjustments</div>${propHtml}`:''}
+    ${(!pos&&!needs.length&&!PROPS.length)?'<p style="color:var(--grey);font-size:13px;line-height:1.6">Nothing to adjust. Log your sessions and check back — this reads your consistency, recognizes sessions you shifted by a day or two, and flags pain in your notes.</p>':''}
+    ${applied}
   `);
 }
 
@@ -1432,6 +1537,8 @@ document.body.addEventListener('click',e=>{
   const wr=e.target.closest('[data-w]');
   if(wr){openWeek(+wr.dataset.w);return;}
   if(e.target.closest('[data-recal]')){openRecal();return;}
+  const ap=e.target.closest('[data-apply]'); if(ap){applyProposal(ap.dataset.apply);return;}
+  if(e.target.closest('[data-resetov]')){resetOverrides();return;}
   if(e.target.closest('[data-jump]')){selIdx=TIDX;tab='today';render();return;}
   if(e.target.closest('[data-openweeks]')){openWeeksPicker();return;}
   if(e.target.closest('[data-back-today]')){selIdx=TIDX;render();return;}
