@@ -231,6 +231,7 @@ textarea.inp{min-height:80px;resize:vertical;line-height:1.5}
 .seg button.on{background:var(--bone);color:var(--void);border-color:var(--bone);font-weight:600}
 .seg button.on[data-st="s"]{background:var(--signal);border-color:var(--signal);color:var(--void)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 
 .dayrow{display:flex;align-items:center;gap:12px;width:100%;padding:13px 0;border-bottom:1px solid var(--rule)}
 .dayrow .wn{width:auto;min-width:56px}
@@ -343,7 +344,7 @@ function gt(type,km){
 }
 
 const W=[
- {n:1,ph:"Recovery",lb:"Post-Race Rest",tot:"~26km",tof:"~3–4h",rng:"9–15 Jul",blk:"30km Block",days:[
+{n:1,ph:"Recovery",lb:"Post-Race Rest",tot:"~26km",tof:"~3–4h",rng:"9–15 Jul",blk:"30km Block",days:[
   ["Thu 9 Jul","e","Easy","6km","6km easy, flat.","4-5/10 perceived. No elevation pressure. First session back."],
   ["Fri 10 Jul","d","Walk","","Rest or 30min easy walk.","Keep moving without loading the legs."],
   ["Sat 11 Jul","e","Easy","8km","8km easy trail.","MacRitchie flat. Don't push."],
@@ -370,177 +371,204 @@ const W=[
   ["Tue 28 Jul","e","Easy","8km","8km easy.",""],
   ["Wed 29 Jul","q","Hill Reps + Str A","8km","6x3min uphill hard, walk down full recovery. Strength A after.","Drive arms, shorten stride on climbs.",1],
  ]},
- {n:4,ph:"Recovery",lb:"Down Week",tot:"~32km",tof:"~4h",rng:"30 Jul – 5 Aug",blk:"30km Block",days:[
+ {n:4,ph:"Recovery",lb:"Down + Downhill Intro",tot:"~30km",tof:"~4h",rng:"30 Jul – 5 Aug",blk:"30km Block",days:[
   ["Thu 30 Jul","d","Rest","","Rest.",""],
-  ["Fri 31 Jul","e","Easy","6km","6km easy.",""],
-  ["Sat 1 Aug","l","Long Run","14km","14km easy. Pull back deliberately.","Should feel almost embarrassingly easy. That's the point."],
-  ["Sun 2 Aug","e","Easy","5km","5km easy.",""],
-  ["Mon 3 Aug","d","Rest","","Rest. One strength session this week only.",""],
-  ["Tue 4 Aug","e","Easy","7km","7km easy.",""],
-  ["Wed 5 Aug","q","Moderate + Str A","8km","8km moderate with strides. Strength A at 70%.","Every 4th week is a down week. Non-negotiable.",1],
+  ["Fri 31 Jul","e","Easy","6km","6km easy trail. Then 2×10min easy stair descents — introduce downhill mechanics.",""],
+  ["Sat 1 Aug","l","Long Run","14km","14km easy, MacRitchie.","Nothing hard. Stay fresh."],
+  ["Sun 2 Aug","e","Easy","5km","5km easy trail.","Recovery."],
+  ["Mon 3 Aug","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Light — groove the movement.",0,1],
+  ["Tue 4 Aug","e","Easy","5km","5km easy trail.",""],
+  ["Wed 5 Aug","e","Easy","6km","6km easy trail.","Down week — no hard vert."]
  ]},
- {n:5,ph:"Specific",lb:"Push Past 21km",tot:"~51km",tof:"~7–8h",rng:"6–12 Aug",blk:"30km Block",days:[
+ {n:5,ph:"Build",lb:"Build + Vert",tot:"~46km",tof:"~6–7h",rng:"6–12 Aug",blk:"30km Block",days:[
   ["Thu 6 Aug","d","Rest","","Rest.",""],
-  ["Fri 7 Aug","e","Easy","8km","8km easy trail.",""],
-  ["Sat 8 Aug","l","Long Run","22km","22km — first serious long effort. Eat every 45min.","Race simulation from a nutrition standpoint."],
-  ["Sun 9 Aug","e","Easy","7km","7km easy shakeout within 24hrs of long run.","Trains your legs for what km 25-30 feels like."],
-  ["Mon 10 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
-  ["Tue 11 Aug","e","Easy","8km","8km easy.",""],
-  ["Wed 12 Aug","q","Quality + Str A","10km","10km moderate with 200m elevation gain. Strength A after.","Back-to-back quality. Run morning, lift afternoon.",1],
+  ["Fri 7 Aug","e","Easy","8km","8km easy trail. Then 2×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 8 Aug","l","Long Run","20km","20km long, easy effort (~2:30). Time on feet.","One gel per 45min. Practise fuelling."],
+  ["Sun 9 Aug","e","Easy","6km","6km easy trail.","Recovery."],
+  ["Mon 10 Aug","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 11 Aug","e","Easy","6km","6km easy trail.",""],
+  ["Wed 12 Aug","q","Vert + Str A","10km","10km incl. incline power-hike 5×3min (treadmill 8–10%). Str A after.","Power-hike the steep bits, don't run them.",1]
  ]},
- {n:6,ph:"Specific",lb:"Break the Barrier",tot:"~48km",tof:"~7–8h",rng:"13–19 Aug",blk:"30km Block",days:[
+ {n:6,ph:"Build",lb:"Extend Vert",tot:"~48km",tof:"~7h",rng:"13–19 Aug",blk:"30km Block",days:[
   ["Thu 13 Aug","d","Rest","","Rest.",""],
-  ["Fri 14 Aug","e","Easy","9km","9km easy trail.",""],
-  ["Sat 15 Aug","l","Long Run","24km","24km — push past the 21km barrier before race day.","A psychological milestone. Respect it."],
-  ["Sun 16 Aug","e","Easy","7km","7km easy shakeout.",""],
-  ["Mon 17 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
-  ["Tue 18 Aug","e","Easy","9km","9km easy.",""],
-  ["Wed 19 Aug","q","Hill Reps + Str A","9km","8x3min or 6x4min hill reps. Strength A after.","The difference from Week 3 should be noticeable.",1],
+  ["Fri 14 Aug","e","Easy","8km","8km easy trail. Then 2×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 15 Aug","l","Long Run","24km","24km long, easy.","Fuel every 40min."],
+  ["Sun 16 Aug","e","Easy","6km","6km easy trail.",""],
+  ["Mon 17 Aug","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 18 Aug","e","Easy","8km","8km easy trail.",""],
+  ["Wed 19 Aug","q","Vert + Str A","10km","10km + StairMaster power-hike 6×3min hard / 2min easy. Str A.","Steady, strong power-hike.",1]
  ]},
- {n:7,ph:"Specific",lb:"Peak Week",tot:"~57km",tof:"~9–11h",rng:"20–26 Aug",blk:"30km Block",days:[
+ {n:7,ph:"Specific",lb:"Peak — sustainable",tot:"~50km",tof:"~7–8h",rng:"20–26 Aug",blk:"30km Block",days:[
   ["Thu 20 Aug","d","Rest","","Rest.",""],
-  ["Fri 21 Aug","e","Easy","8km","8km easy.",""],
-  ["Sat 22 Aug","l","Peak Long Run","26–28km","26-28km peak long run. Conservative first half, survive the second.","Most important session of the block. Finish is the only metric."],
-  ["Sun 23 Aug","e","Easy","6km","6km easy shakeout.",""],
-  ["Mon 24 Aug","s","Strength B","","Strength B — 25-30min.","",0,1],
-  ["Tue 25 Aug","e","Easy","9km","9km easy.",""],
-  ["Wed 26 Aug","q","Race Sim + Str A","12km","12km at race effort (7-8/10) with full race nutrition. Strength A after.","Most race-specific session of the block.",1],
+  ["Fri 21 Aug","e","Easy","8km","8km easy trail. Then 3×12min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 22 Aug","l","Long Run","26km","26km long (~3h), easy. Longest of the 30k block.","Back half on tired legs — stay easy."],
+  ["Sun 23 Aug","e","Easy","6km","6km easy trail.",""],
+  ["Mon 24 Aug","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 25 Aug","e","Easy","8km","8km easy trail.",""],
+  ["Wed 26 Aug","q","Vert + Str A","10km","10km + incline intervals 6×2min. Str A.","Capped on purpose — the 30k is a checkpoint.",1]
  ]},
- {n:8,ph:"Recovery",lb:"Down Week",tot:"~35km",tof:"~4h 30m",rng:"27 Aug – 2 Sep",blk:"30km Block",days:[
+ {n:8,ph:"Recovery",lb:"Down Week",tot:"~34km",tof:"~4h 30m",rng:"27 Aug – 2 Sep",blk:"30km Block",days:[
   ["Thu 27 Aug","d","Rest","","Rest.",""],
-  ["Fri 28 Aug","e","Easy","7km","7km easy.",""],
-  ["Sat 29 Aug","l","Long Run","15km","15km easy. No heroics.",""],
-  ["Sun 30 Aug","e","Easy","6km","6km easy.",""],
-  ["Mon 1 Sep","d","Rest","","Rest. One strength session this week.",""],
-  ["Tue 2 Sep","e","Easy","7km","7km easy.",""],
-  ["Wed 3 Sep","q","Moderate + Str A","8km","8km with 3x10min moderate. Strength A at 60-70%.","Huge stimulus absorbed — let it rebuild.",1],
+  ["Fri 28 Aug","e","Easy","6km","6km easy trail.",""],
+  ["Sat 29 Aug","l","Long Run","16km","16km easy.","Relaxed."],
+  ["Sun 30 Aug","e","Easy","5km","5km easy trail.",""],
+  ["Mon 31 Aug","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Light.",0,1],
+  ["Tue 1 Sep","e","Easy","5km","5km easy trail.",""],
+  ["Wed 2 Sep","e","Easy","6km","6km easy trail.",""]
  ]},
- {n:9,ph:"Taper",lb:"Sharpen Up",tot:"~40km",tof:"~5h",rng:"4–10 Sep",blk:"30km Block",days:[
-  ["Thu 4 Sep","d","Rest","","Rest.",""],
-  ["Fri 5 Sep","e","Easy","8km","8km easy.",""],
-  ["Sat 6 Sep","l","Last Long Run","16km","16km easy. Comfortable and confident.","You are fit. This is just a reminder."],
-  ["Sun 7 Sep","e","Easy","6km","6km easy.",""],
-  ["Mon 8 Sep","d","Rest","","Rest.",""],
-  ["Tue 9 Sep","e","Easy","8km","8km easy.",""],
-  ["Wed 10 Sep","q","Quality","10km","10km with 2x15min at race effort. Strength A at 50%.","Maintaining fitness while body recovers.",1],
+ {n:9,ph:"Taper",lb:"Sharpen for 30k",tot:"~38km",tof:"~5h",rng:"3–9 Sep",blk:"30km Block",days:[
+  ["Thu 3 Sep","d","Rest","","Rest.",""],
+  ["Fri 4 Sep","e","Easy","6km","6km easy trail. Then 6×20s strides.",""],
+  ["Sat 5 Sep","l","Long Run","16km","16km w/ 3×3min at 30k effort in the middle.","Rehearse race effort, then ease off."],
+  ["Sun 6 Sep","e","Easy","5km","5km easy trail.",""],
+  ["Mon 7 Sep","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 8 Sep","e","Easy","6km","6km easy trail.",""],
+  ["Wed 9 Sep","e","Easy","8km","8km easy trail. Then 6×20s strides.","Legs quick, effort low."]
  ]},
- {n:10,ph:"Taper",lb:"Race Week",tot:"~15km",tof:"~2h",rng:"11–13 Sep",blk:"30km Block",days:[
-  ["Thu 11 Sep","d","Rest","","Rest. Gear check.","Lay out all kit. Charge watch. Prep nutrition."],
-  ["Fri 12 Sep","e","Easy + Strides","5km","5km easy with 4x1min pickups.","Light on the feet. Sharp in the mind."],
-  ["Sat 13 Sep","r","Race Day","30km","30km Trail Race — Race Day.","Everything you have built is in your legs. Start conservatively. Fuel early. Enjoy it."],
-  ["Sun 14 Sep","d","Rest","","Rest.",""],
-  ["Mon 15 Sep","d","Rest","","Rest.",""],
-  ["Tue 16 Sep","d","Rest","","Rest.",""],
-  ["Wed 17 Sep","d","Rest","","Rest.",""],
+ {n:10,ph:"Taper",lb:"30km Race Week",tot:"~18km + race",tof:"~2h + race",rng:"10–16 Sep",blk:"30km Block",days:[
+  ["Thu 10 Sep","d","Rest","","Rest.",""],
+  ["Fri 11 Sep","e","Easy","5km","5km easy trail. Then 4×20s strides.",""],
+  ["Sat 12 Sep","e","Easy","4km","4km easy trail.","Shakeout only."],
+  ["Sun 13 Sep","r","30km Race","30kmkm","30km RACE — checkpoint. Even effort, fuel early.","Dress rehearsal for the 50k. Don't empty the tank."],
+  ["Mon 14 Sep","d","Rest","","Rest.","Full recovery."],
+  ["Tue 15 Sep","e","Easy","3km","3km easy trail.","Optional easy walk/jog."],
+  ["Wed 16 Sep","e","Easy","5km","5km easy trail.","Very easy if legs are willing."]
  ]},
- {n:11,ph:"Recovery",lb:"Post-Race Rest",tot:"~20km",tof:"~2h 30m",rng:"18–24 Sep",blk:"Recovery",days:[
-  ["Thu 18 Sep","d","Rest","","Complete rest.","Race takes more than you realise on the day."],
-  ["Fri 19 Sep","d","Rest","","Rest.",""],
-  ["Sat 20 Sep","e","Walk/Easy","4km","Easy walk or very gentle jog only if legs feel ready.","Any soreness — walk only."],
-  ["Sun 21 Sep","d","Rest","","Rest.",""],
-  ["Mon 22 Sep","d","Rest","","Rest.",""],
-  ["Tue 23 Sep","e","Easy","6km","6km easy, flat.","4-5/10 maximum."],
-  ["Wed 24 Sep","e","Easy","8km","8km easy — one gentle MacRitchie loop.","No pressure on pace or time."],
+ {n:11,ph:"Recovery",lb:"Post-Race Rest",tot:"~20km",tof:"~2h 30m",rng:"17–23 Sep",blk:"Recovery",days:[
+  ["Thu 17 Sep","d","Rest","","Rest.",""],
+  ["Fri 18 Sep","e","Easy","5km","5km easy trail.",""],
+  ["Sat 19 Sep","e","Easy","8km","8km easy trail.","Very easy, flat."],
+  ["Sun 20 Sep","d","Rest","","Rest.",""],
+  ["Mon 21 Sep","d","Rest","","Rest.","Rest or gentle walk."],
+  ["Tue 22 Sep","e","Easy","4km","4km easy trail.",""],
+  ["Wed 23 Sep","e","Easy","5km","5km easy trail.",""]
  ]},
- {n:12,ph:"Recovery",lb:"Rebuild Base",tot:"~32km",tof:"~3h 45m",rng:"25 Sep – 1 Oct",blk:"Recovery",days:[
-  ["Thu 25 Sep","d","Rest","","Rest.",""],
-  ["Fri 26 Sep","e","Easy","8km","8km easy trail.",""],
-  ["Sat 27 Sep","l","Easy Long","14km","14km easy long run.","Rebuilding, not racing."],
-  ["Sun 28 Sep","e","Easy","6km","6km easy.",""],
-  ["Mon 29 Sep","s","Strength B","","Strength B — 60% load.","",0,1],
-  ["Tue 30 Sep","e","Easy","7km","7km easy.",""],
-  ["Wed 1 Oct","q","Moderate + Str A","8km","8km easy to moderate. Strength A at 60%.","Ease back in gently.",1],
+ {n:12,ph:"Recovery",lb:"Rebuild Base",tot:"~32km",tof:"~3h 45m",rng:"24–30 Sep",blk:"Recovery",days:[
+  ["Thu 24 Sep","d","Rest","","Rest.",""],
+  ["Fri 25 Sep","e","Easy","6km","6km easy trail.",""],
+  ["Sat 26 Sep","l","Long Run","12km","12km easy.","Base back on."],
+  ["Sun 27 Sep","e","Easy","5km","5km easy trail.",""],
+  ["Mon 28 Sep","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Strength back to 2×.",0,1],
+  ["Tue 29 Sep","e","Easy","6km","6km easy trail.",""],
+  ["Wed 30 Sep","e","Easy","6km","6km easy trail. Gentle incline finish.",""]
  ]},
- {n:13,ph:"Build",lb:"40km Foundation",tot:"~48km",tof:"~6h 30m",rng:"2–8 Oct",blk:"40km Block",days:[
-  ["Thu 2 Oct","d","Rest","","Rest.",""],
-  ["Fri 3 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Sat 4 Oct","l","Long Run","20km","20km — two MacRitchie loops.","Your new baseline."],
-  ["Sun 5 Oct","e","Easy","7km","7km easy shakeout.",""],
-  ["Mon 6 Oct","s","Strength B","","Strength B — full load.","",0,1],
-  ["Tue 7 Oct","e","Easy","9km","9km easy.",""],
-  ["Wed 8 Oct","q","Quality + Str A","10km","10km with 3x15min moderate. Strength A after.","Start of the 40km block.",1],
+ {n:13,ph:"Build",lb:"40k Foundation",tot:"~46km",tof:"~6h 30m",rng:"1–7 Oct",blk:"40km Block",days:[
+  ["Thu 1 Oct","d","Rest","","Rest.",""],
+  ["Fri 2 Oct","e","Easy","8km","8km easy trail. Then 2×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 3 Oct","l","Long Run","22km","22km long, easy.","Steady, fuelled."],
+  ["Sun 4 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Mon 5 Oct","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 6 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Wed 7 Oct","q","Vert + Str A","10km","10km + incline intervals 6×3min — hardest vert early in the block. Str A.","Front-loaded intensity, per plan.",1]
  ]},
- {n:14,ph:"Build",lb:"Extend Long Run",tot:"~52km",tof:"~7h",rng:"9–15 Oct",blk:"40km Block",days:[
-  ["Thu 9 Oct","d","Rest","","Rest.",""],
-  ["Fri 10 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Sat 11 Oct","l","Long Run","24km","24km — back past the 21km barrier again.","More manageable than before the 30km race."],
-  ["Sun 12 Oct","e","Easy","7km","7km easy.",""],
-  ["Mon 13 Oct","s","Strength B","","Strength B.","",0,1],
-  ["Tue 14 Oct","e","Easy","9km","9km easy.",""],
-  ["Wed 15 Oct","q","Hill Reps + Str A","10km","8x3min or 6x4min hill reps. Strength A after.","",1],
+ {n:14,ph:"Build",lb:"Extend Long",tot:"~48km",tof:"~7h",rng:"8–14 Oct",blk:"40km Block",days:[
+  ["Thu 8 Oct","d","Rest","","Rest.",""],
+  ["Fri 9 Oct","e","Easy","8km","8km easy trail. Then 3×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 10 Oct","l","Long Run","26km","26km long, easy.","Fuel every 40min."],
+  ["Sun 11 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Mon 12 Oct","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 13 Oct","e","Easy","8km","8km easy trail.",""],
+  ["Wed 14 Oct","q","Vert + Str A","10km","10km + StairMaster power-hike 6×4min. Str A.","Strong, controlled climbing.",1]
  ]},
- {n:15,ph:"Specific",lb:"Three-Loop Target",tot:"~55km",tof:"~8–9h",rng:"16–22 Oct",blk:"40km Block",days:[
-  ["Thu 16 Oct","d","Rest","","Rest.",""],
-  ["Fri 17 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Sat 18 Oct","l","Three-Loop Run","30km","30km — three MacRitchie loops. First time at 40km effort equivalent.","Fuel every 40min. The psychological breakthrough of the 40km block."],
-  ["Sun 19 Oct","e","Easy","7km","7km easy shakeout.",""],
-  ["Mon 20 Oct","s","Strength B","","Strength B.","",0,1],
-  ["Tue 21 Oct","e","Easy","9km","9km easy.",""],
-  ["Wed 22 Oct","q","Race Sim + Str A","12km","12km sustained with full nutrition protocol. Strength A after.","Practise your 40km nutrition strategy here.",1],
+ {n:15,ph:"Specific",lb:"Race-Specific Long",tot:"~50km",tof:"~7–8h",rng:"15–21 Oct",blk:"40km Block",days:[
+  ["Thu 15 Oct","d","Rest","","Rest.",""],
+  ["Fri 16 Oct","e","Easy","8km","8km easy trail. Then 3×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 17 Oct","l","Long Run","30km","30km long (~3:45), easy effort. Key 40k-specific run.","Full fuel + gear rehearsal. Easy, not hard."],
+  ["Sun 18 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Mon 19 Oct","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 20 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Wed 21 Oct","e","Easy","8km","8km easy trail. Then strides.","Ease intensity as volume peaks."]
  ]},
- {n:16,ph:"Recovery",lb:"Down Week",tot:"~38km",tof:"~4h 45m",rng:"23–29 Oct",blk:"40km Block",days:[
-  ["Thu 23 Oct","d","Rest","","Rest.",""],
-  ["Fri 24 Oct","e","Easy","8km","8km easy.",""],
-  ["Sat 25 Oct","l","Long Run","16km","16km easy. Pull back deliberately.","Let the three-loop effort absorb."],
-  ["Sun 26 Oct","e","Easy","6km","6km easy.",""],
-  ["Mon 27 Oct","d","Rest","","Rest. One strength session this week.",""],
-  ["Tue 28 Oct","e","Easy","8km","8km easy.",""],
-  ["Wed 29 Oct","q","Moderate + Str A","8km","8km moderate. Strength A at 70%.","",1],
+ {n:16,ph:"Recovery",lb:"Down Week",tot:"~36km",tof:"~4h 30m",rng:"22–28 Oct",blk:"40km Block",days:[
+  ["Thu 22 Oct","d","Rest","","Rest.",""],
+  ["Fri 23 Oct","e","Easy","6km","6km easy trail.",""],
+  ["Sat 24 Oct","l","Long Run","18km","18km easy.","Relaxed."],
+  ["Sun 25 Oct","e","Easy","5km","5km easy trail.",""],
+  ["Mon 26 Oct","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Light.",0,1],
+  ["Tue 27 Oct","e","Easy","5km","5km easy trail.",""],
+  ["Wed 28 Oct","e","Easy","6km","6km easy trail.",""]
  ]},
- {n:17,ph:"Specific",lb:"Peak 40km Prep",tot:"~59km",tof:"~10–12h",rng:"30 Oct – 5 Nov",blk:"40km Block",days:[
-  ["Thu 30 Oct","d","Rest","","Rest.",""],
-  ["Fri 31 Oct","e","Easy","9km","9km easy trail.",""],
-  ["Sat 1 Nov","l","Peak Long Run","32–35km","32-35km peak long run. Time on feet: 5.5-7h.","Longest run of the year. This run makes December possible."],
-  ["Sun 2 Nov","e","Easy","7km","7km easy shakeout within 24hrs.","Training your legs for what km 32-40 feels like."],
-  ["Mon 3 Nov","s","Strength B","","Strength B.","",0,1],
-  ["Tue 4 Nov","e","Easy","9km","9km easy.",""],
-  ["Wed 5 Nov","q","Quality + Str A","12km","12km sustained. Practise eating through fatigue. Strength A after.","Fuelling when you don't feel like it is a skill.",1],
+ {n:17,ph:"Specific",lb:"Peak 40k Prep — capped",tot:"~52km",tof:"~8–9h",rng:"29 Oct – 4 Nov",blk:"40km Block",days:[
+  ["Thu 29 Oct","d","Rest","","Rest.",""],
+  ["Fri 30 Oct","e","Easy","8km","8km easy trail. Then 3×12min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 31 Oct","l","Long Run","32km","32km long (~4h), easy. Longest run of the plan.","Practise everything. Banked, not blown."],
+  ["Sun 1 Nov","e","Easy","6km","6km easy trail.",""],
+  ["Mon 2 Nov","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 3 Nov","e","Easy","8km","8km easy trail.",""],
+  ["Wed 4 Nov","e","Easy","8km","8km easy trail.","Keep intensity low near peak."]
  ]},
- {n:18,ph:"Recovery",lb:"Consolidation",tot:"~40km",tof:"~5h",rng:"6–12 Nov",blk:"40km Block",days:[
-  ["Thu 6 Nov","d","Rest","","Rest.",""],
-  ["Fri 7 Nov","e","Easy","8km","8km easy.",""],
-  ["Sat 8 Nov","l","Long Run","18km","18km easy. Recovery long run.","Should feel manageable after last week."],
-  ["Sun 9 Nov","e","Easy","7km","7km easy.",""],
-  ["Mon 10 Nov","s","Strength B","","Strength B.","",0,1],
-  ["Tue 11 Nov","e","Easy","8km","8km easy.",""],
-  ["Wed 12 Nov","q","Moderate + Str A","9km","9km moderate. Strength A at 70%.","",1],
+ {n:18,ph:"Recovery",lb:"Consolidation",tot:"~40km",tof:"~5h",rng:"5–11 Nov",blk:"40km Block",days:[
+  ["Thu 5 Nov","d","Rest","","Rest.",""],
+  ["Fri 6 Nov","e","Easy","6km","6km easy trail.",""],
+  ["Sat 7 Nov","l","Long Run","20km","20km easy.","Absorb the block."],
+  ["Sun 8 Nov","e","Easy","5km","5km easy trail.",""],
+  ["Mon 9 Nov","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Strength → 1× maintenance.",0,1],
+  ["Tue 10 Nov","e","Easy","6km","6km easy trail.",""],
+  ["Wed 11 Nov","e","Easy","8km","8km easy trail.",""]
  ]},
- {n:19,ph:"Build",lb:"Final Build",tot:"~50km",tof:"~6h 30m",rng:"13–19 Nov",blk:"Goal Prep",days:[
-  ["Thu 13 Nov","d","Rest","","Rest.",""],
-  ["Fri 14 Nov","e","Easy","9km","9km easy trail.",""],
-  ["Sat 15 Nov","l","Long Run","26km","26km — two and a half loops if possible.","Sharpening, not building."],
-  ["Sun 16 Nov","e","Easy","7km","7km easy.",""],
-  ["Mon 17 Nov","s","Strength B","","Strength B.","",0,1],
-  ["Tue 18 Nov","e","Easy","9km","9km easy.",""],
-  ["Wed 19 Nov","q","Quality + Str A","10km","10km with 4x10min sustained. Strength A after.","",1],
+ {n:19,ph:"Build",lb:"Final Aerobic Build",tot:"~46km",tof:"~6h",rng:"12–18 Nov",blk:"Goal Prep",days:[
+  ["Thu 12 Nov","d","Rest","","Rest.",""],
+  ["Fri 13 Nov","e","Easy","8km","8km easy trail.",""],
+  ["Sat 14 Nov","l","Long Run","24km","24km easy, one 20min block at 40k effort.","Low-intensity, race-specific."],
+  ["Sun 15 Nov","e","Easy","6km","6km easy trail.",""],
+  ["Mon 16 Nov","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Maintenance.",0,1],
+  ["Tue 17 Nov","e","Easy","8km","8km easy trail.",""],
+  ["Wed 18 Nov","e","Easy","8km","8km easy trail. Then strides.",""]
  ]},
- {n:20,ph:"Taper",lb:"Pre-Goal Taper",tot:"~40km",tof:"~5h",rng:"20–26 Nov",blk:"Goal Prep",days:[
-  ["Thu 20 Nov","d","Rest","","Rest.",""],
-  ["Fri 21 Nov","e","Easy","8km","8km easy.",""],
-  ["Sat 22 Nov","l","Last Long Run","18km","18km easy. Comfortable and confident.","You are ready."],
-  ["Sun 23 Nov","e","Easy","6km","6km easy.",""],
-  ["Mon 24 Nov","d","Rest","","Rest.",""],
-  ["Tue 25 Nov","e","Easy","8km","8km easy.",""],
-  ["Wed 26 Nov","q","Quality","10km","10km with 2x15min at goal effort. Strength A at 50%.","Keep legs sharp. Trust the training.",1],
+ {n:20,ph:"Taper",lb:"Taper Begins",tot:"~36km",tof:"~4h 30m",rng:"19–25 Nov",blk:"Goal Prep",days:[
+  ["Thu 19 Nov","d","Rest","","Rest.",""],
+  ["Fri 20 Nov","e","Easy","6km","6km easy trail.",""],
+  ["Sat 21 Nov","l","Long Run","16km","16km easy.","Legs going fresh."],
+  ["Sun 22 Nov","e","Easy","5km","5km easy trail.",""],
+  ["Mon 23 Nov","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Light.",0,1],
+  ["Tue 24 Nov","e","Easy","5km","5km easy trail.",""],
+  ["Wed 25 Nov","e","Easy","6km","6km easy trail. Then strides.",""]
  ]},
- {n:21,ph:"Taper",lb:"Goal Week Prep",tot:"~15km",tof:"~1h 45m",rng:"27 Nov – 3 Dec",blk:"Goal Prep",days:[
-  ["Thu 27 Nov","d","Rest","","Rest. Gear prep. Route planning.","Plan nutrition drops and pacer points."],
-  ["Fri 28 Nov","e","Easy + Strides","6km","6km easy with 4x1min pickups.",""],
-  ["Sat 29 Nov","e","Very Easy","5km","5km very easy.",""],
-  ["Sun 30 Nov","d","Rest","","Rest. Sleep well.",""],
-  ["Mon 1 Dec","d","Rest","","Rest.",""],
-  ["Tue 2 Dec","e","Shakeout","4km","4km very easy, 6 strides.","Light on the legs. Sharp in the mind."],
-  ["Wed 3 Dec","d","Rest","","Rest. Everything is ready.",""],
+ {n:21,ph:"Taper",lb:"Sharpen, Don't Fade",tot:"~20km",tof:"~2h 30m",rng:"26 Nov – 2 Dec",blk:"Goal Prep",days:[
+  ["Thu 26 Nov","d","Rest","","Rest.",""],
+  ["Fri 27 Nov","e","Easy","5km","5km easy trail. Then 4×20s strides.",""],
+  ["Sat 28 Nov","e","Easy","8km","8km easy trail. With 4×2min at goal effort.","Stay sharp, stay fresh."],
+  ["Sun 29 Nov","e","Easy","4km","4km easy trail.",""],
+  ["Mon 30 Nov","d","Rest","","Rest.",""],
+  ["Tue 1 Dec","e","Easy","4km","4km easy trail. Then strides.",""],
+  ["Wed 2 Dec","d","Rest","","Rest.","Optional easy walk."]
  ]},
- {n:22,ph:"Goal",lb:"40km Attempt",tot:"40km",tof:"7–10h",rng:"Dec (TBC)",blk:"Goal",days:[
-  ["Thu 4 Dec","d","Rest","","Rest. Final preparation.","Everything is already in your legs."],
-  ["Fri 5 Dec","e","Very Easy","4km","4km very easy shakeout only.",""],
-  ["Sat 6 Dec","g","40km Goal","40km","4 Loops of MacRitchie — 40km Goal Attempt.","5 months in your legs. Start conservatively. Fuel every 40min. Walk climbs from loop 3. Pacer joins at loop 3."],
-  ["Sun 7 Dec","d","Rest","","Rest. Celebrate.","You just ran 40km."],
-  ["Mon 8 Dec","d","Rest","","Rest.",""],
-  ["Tue 9 Dec","d","Rest","","Rest.",""],
-  ["Wed 10 Dec","d","Rest","","Rest.",""],
+ {n:22,ph:"Goal",lb:"40km Attempt",tot:"40km",tof:"~7–10h",rng:"3–9 Dec",blk:"Goal",days:[
+  ["Thu 3 Dec","d","Rest","","Rest.",""],
+  ["Fri 4 Dec","e","Easy","4km","4km easy trail. Then 4×20s strides.",""],
+  ["Sat 5 Dec","e","Easy","3km","3km easy trail.","Shakeout only."],
+  ["Sun 6 Dec","g","40km Attempt","40kmkm","40km ATTEMPT — dress rehearsal for the 50k. Even pacing, fuel from the start.","Finish strong and healthy, not empty."],
+  ["Mon 7 Dec","d","Rest","","Rest.","Rest."],
+  ["Tue 8 Dec","d","Rest","","Rest.","Rest or gentle walk."],
+  ["Wed 9 Dec","e","Easy","4km","4km easy trail.","Very easy if moving feels good."]
  ]},
+ {n:23,ph:"Recovery",lb:"Post-40k Recovery",tot:"~16km",tof:"~2h",rng:"10–16 Dec",blk:"Bridge to 50k",days:[
+  ["Thu 10 Dec","d","Rest","","Rest.",""],
+  ["Fri 11 Dec","d","Rest","","Rest.","Walk / mobility only."],
+  ["Sat 12 Dec","e","Easy","6km","6km easy trail.","Very easy if legs are willing."],
+  ["Sun 13 Dec","d","Rest","","Rest.",""],
+  ["Mon 14 Dec","d","Rest","","Rest.",""],
+  ["Tue 15 Dec","e","Easy","4km","4km easy trail.",""],
+  ["Wed 16 Dec","e","Easy","6km","6km easy trail.",""]
+ ]},
+ {n:24,ph:"Base",lb:"Into the 50k Base",tot:"~28km",tof:"~3h 30m",rng:"17–23 Dec",blk:"Bridge to 50k",days:[
+  ["Thu 17 Dec","d","Rest","","Rest.",""],
+  ["Fri 18 Dec","e","Easy","6km","6km easy trail.",""],
+  ["Sat 19 Dec","l","Long Run","12km","12km easy.","Base rebuilding."],
+  ["Sun 20 Dec","e","Easy","5km","5km easy trail.",""],
+  ["Mon 21 Dec","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Strength back to 2×.",0,1],
+  ["Tue 22 Dec","e","Easy","5km","5km easy trail.",""],
+  ["Wed 23 Dec","e","Easy","6km","6km easy trail. Gentle incline finish.",""]
+ ]},
+ {n:25,ph:"Base",lb:"First 50k Steps",tot:"~36km",tof:"~4h 30m",rng:"24–30 Dec",blk:"Bridge to 50k",days:[
+  ["Thu 24 Dec","d","Rest","","Rest.",""],
+  ["Fri 25 Dec","e","Easy","8km","8km easy trail. Then 2×15min Then controlled stair descents (eccentric quad prep).",""],
+  ["Sat 26 Dec","l","Long Run","24km","24km easy — time on feet, first 50k-base long.","Slow and steady into 2027."],
+  ["Sun 27 Dec","e","Easy","6km","6km easy trail.",""],
+  ["Mon 28 Dec","s","Strength B","","Strength B — 30min. Eccentric step-downs, reverse Nordics, single-leg + calf raises.","Descending durability.",0,1],
+  ["Tue 29 Dec","e","Easy","6km","6km easy trail.",""],
+  ["Wed 30 Dec","q","Vert + Str A","8km","8km + StairMaster power-hike maintenance. Str A.","Gentle re-entry to vert.",1]
+ ]}
 ];
 const ALL=W.flatMap(w=>w.days.map(d=>({
   day:d[0],type:d[1],tag:d[2],km:d[3],session:d[4],note:d[5],
@@ -619,15 +647,14 @@ async function sl(logs){
 async function saveToDB(dayKey,entry){
   if(!sb){setSyncStatus('offline');return;}
   setSyncStatus('saving');
+  const base={day_key:dayKey,status:entry.st||null,actual_time:entry.at||null,actual_distance:entry.ad||null,notes:entry.n||null};
+  const full=Object.assign({},base,{avg_hr:entry.hr||null,elevation:entry.elev||null,avg_pace:entry.pace||null});
   try{
-    const{error}=await sb.from('training_logs').upsert({
-      day_key:dayKey,
-      status:entry.st||null,
-      actual_time:entry.at||null,
-      actual_distance:entry.ad||null,
-      notes:entry.n||null
-    },{onConflict:'day_key'});
-    if(error)throw error;
+    let{error}=await sb.from('training_logs').upsert(full,{onConflict:'day_key'});
+    if(error){                       // new columns not added yet -> fall back so existing sync still works
+      const r=await sb.from('training_logs').upsert(base,{onConflict:'day_key'});
+      if(r.error)throw r.error;
+    }
     setSyncStatus('synced');
   }catch(e){
     console.warn('Save failed, stored locally',e);
@@ -796,7 +823,9 @@ async function showStravaActivities(){
           act:act,planned:planned,idx:ALL.indexOf(planned),
           dist:+(act.distance/1000).toFixed(2),
           time:act.moving_time,
-          elev:act.total_elevation_gain
+          elev:act.total_elevation_gain,
+          hr:act.average_heartrate,
+          pace:paceFromSpeed(act.average_speed)
         });
       } else if(isRun){
         unmatched.push(act);
@@ -843,9 +872,9 @@ async function showStravaActivities(){
           const btn=document.createElement('button');
           btn.style.cssText='font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;background:var(--ink);color:#fff;border:none;cursor:pointer;white-space:nowrap';
           btn.textContent='Import';
-          (function(idx,dist,t){
-            btn.onclick=function(){importStravaActivity(idx,dist,t);};
-          })(m.idx,m.dist+'km',fmtTime(m.time));
+          (function(mm){
+            btn.onclick=function(){importStravaActivity(mm);};
+          })(m);
           row.appendChild(btn);
         }
         frag.appendChild(row);
@@ -902,13 +931,16 @@ async function showStravaActivities(){
   }
 }
 
-async function importStravaActivity(dayIdx,distance,time){
+async function importStravaActivity(m){
   const logs=gl();
-  const day=ALL[dayIdx];
+  const day=ALL[m.idx];
   const k=dk(day);
   if(!logs[k])logs[k]={};
-  logs[k].ad=distance;
-  logs[k].at=time;
+  logs[k].ad=m.dist+'km';
+  logs[k].at=fmtTime(m.time);
+  if(m.elev!=null)logs[k].elev=String(Math.round(m.elev));
+  if(m.hr)logs[k].hr=String(Math.round(m.hr));
+  if(m.pace)logs[k].pace=m.pace;
   if(!logs[k].st)logs[k].st='d';
   await sl(logs);
   await saveToDB(k,logs[k]);
@@ -1110,14 +1142,16 @@ function parseDur(s){
   if(!matched){const n=parseFloat(s); if(!isNaN(n))m=n;}
   return Math.round(m);
 }
+function paceFromSpeed(mps){ if(!mps||mps<=0)return ''; let s=Math.round(1000/mps); let mm=Math.floor(s/60), ss=s%60; if(ss===60){mm++;ss=0;} return mm+':'+String(ss).padStart(2,'0'); }
 function fmtDur(min){ if(!min)return '0m'; const h=Math.floor(min/60),m=min%60; return h?(h+'h'+(m?(' '+m+'m'):'')):(m+'m'); }
 function weekActuals(wk){
-  let dist=0,mins=0;
+  let dist=0,mins=0,elev=0;
   wkDays(wk.n).forEach(d=>{ const l=logOf(d); if(!l)return;
     const kd=parseFloat((String(l.ad||'').match(/\d+(?:\.\d+)?/)||[0])[0]); if(!isNaN(kd))dist+=kd;
     mins+=parseDur(l.at||'');
+    const ev=parseFloat((String(l.elev||'').match(/\d+/)||[0])[0]); if(!isNaN(ev))elev+=ev;
   });
-  return {dist:Math.round(dist*10)/10, mins};
+  return {dist:Math.round(dist*10)/10, mins, elev:Math.round(elev)};
 }
 function volCompare(wk){
   const a=weekActuals(wk);
@@ -1135,6 +1169,7 @@ function volCompare(wk){
       <div class="vol-top"><span class="mono">Time on feet</span><span class="vol-v">${fmtDur(a.mins)}<span class="vol-u">/ ${esc(wk.tof)}</span></span></div>
       <div class="vol-bar"><i style="width:${tPct}%"></i></div>
     </div>
+    <div class="vol-metric"><div class="vol-top"><span class="mono">Elevation banked</span><span class="vol-v">${a.elev}<span class="vol-u">m \u2191</span></span></div></div>
   </div>`;
 }
 
@@ -1175,6 +1210,7 @@ function vToday(){
         <div class="acc-body" hidden>${volCompare(wk)}</div>
       </div>
       ${l&&(l.ad||l.at)?`<div class="spec-row"><span class="mono">Logged</span><span class="spec-v">${esc(l.ad||'')}${l.ad&&l.at?' · ':''}${esc(l.at||'')}</span></div>`:''}
+      ${l&&(l.pace||l.hr||l.elev)?`<div class="spec-row"><span class="mono">Actuals</span><span class="spec-v">${[l.pace?l.pace+'/km':'',l.hr?l.hr+' bpm':'',l.elev?l.elev+'m \u2191':''].filter(Boolean).join(' · ')}</span></div>`:''}
     </div>
 
     <button class="act${l?' done':''}" data-log="1">${l?'Edit log':(d.type==='d'?'Mark rest taken':'Log session')}</button>
@@ -1295,6 +1331,11 @@ function openLog(){
       <div><label for="fAd">Planned distance: ${esc(d.km||'—')}</label><input class="inp" id="fAd" value="${esc(l.ad||'')}" placeholder="${esc(d.km||'—')}"></div>
       <div><label for="fAt">Planned time: ${esc(gt(d.type,d.km)||'—')}</label><input class="inp" id="fAt" value="${esc(l.at||'')}" placeholder="${esc(gt(d.type,d.km)||'—')}"></div>
     </div>
+    <div class="fld g3">
+      <div><label for="fPace">Pace /km</label><input class="inp" id="fPace" value="${esc(l.pace||'')}" placeholder="5:30"></div>
+      <div><label for="fHr">Avg HR</label><input class="inp" id="fHr" value="${esc(l.hr||'')}" placeholder="bpm"></div>
+      <div><label for="fElev">Elev \u2191m</label><input class="inp" id="fElev" value="${esc(l.elev||'')}" placeholder="m"></div>
+    </div>
     <div class="fld">
       <label for="fN">Notes</label>
       <textarea class="inp" id="fN" placeholder="Terrain, weather, fuelling, how the legs held up…">${esc(l.n||'')}</textarea>
@@ -1321,7 +1362,11 @@ function openLog(){
   document.getElementById('fSave').onclick=async()=>{
     const logs=gl(),k=dk(d);
     logs[k]={st:st||'d',ad:document.getElementById('fAd').value.trim(),
-             at:document.getElementById('fAt').value.trim(),n:document.getElementById('fN').value.trim()};
+             at:document.getElementById('fAt').value.trim(),
+             pace:document.getElementById('fPace').value.trim(),
+             hr:document.getElementById('fHr').value.trim(),
+             elev:document.getElementById('fElev').value.trim(),
+             n:document.getElementById('fN').value.trim()};
     await sl(logs);saveToDB(k,logs[k]);
     closeSheet();render();
   };
@@ -1377,6 +1422,9 @@ let OV={}; try{OV=JSON.parse(localStorage.getItem('road40_ov_v1')||'{}');}catch(
 function saveOV(){ try{localStorage.setItem('road40_ov_v1',JSON.stringify(OV));}catch(e){} }
 function D(i){ const o=OV[dk(ALL[i])]; return o?Object.assign({},ALL[i],o):ALL[i]; }
 function ovCount(){ return Object.keys(OV).length; }
+function getMaxHR(){ const v=parseInt(localStorage.getItem('road40_maxhr')||''); return (v>=120&&v<=230)?v:0; }
+function setMaxHR(x){ const v=parseInt(x); if(v>=120&&v<=230){try{localStorage.setItem('road40_maxhr',String(v));}catch(e){}} else if(!x){try{localStorage.removeItem('road40_maxhr');}catch(e){}} }
+function z2ceil(){ const m=getMaxHR(); return m?Math.round(m*0.75):0; }   // easy-run ceiling ~75% of max HR
 function logAt(i){ return gl()[dk(ALL[i])]||null; }
 function planKm(i){ return parseFloat(dn(ALL[i].km||''))||0; }
 function actKm(log){ return log?(parseFloat((String(log.ad||'').match(/\d+(?:\.\d+)?/)||[0])[0])||0):0; }
@@ -1415,13 +1463,22 @@ function coachReview(){
     if(c.s==='shifted')shifts.push({i,to:c.to,km:c.km});
     else if(c.s==='missed')misses.push({i});
   }
-  let injury=false,done=0,skip=0;
+  let injury=false,done=0,skip=0,hasHR=false; const hardEasy=[],flatVert=[]; const z2=z2ceil();
   for(let i=0;i<ALL.length;i++){
     const dt=DATES[i]; if(!dt)continue; const diff=(TODAY-dt)/86400000; if(diff<0||diff>14)continue;
-    const n=(logs[dk(ALL[i])]?.n||'').toLowerCase();
+    const l=logs[dk(ALL[i])];
+    const n=(l?.n||'').toLowerCase();
     if(/pain|hurt|injur|strain|tweak|sore/.test(n))injury=true;
+    if(l&&(l.st==='d'||l.st==='p')){
+      const hr=parseInt((String(l.hr||'').match(/\d+/)||[0])[0]);
+      const ev=parseInt((String(l.elev||'').match(/\d+/)||[0])[0]);
+      if(hr)hasHR=true;
+      if(z2 && ALL[i].type==='e' && hr && hr>z2) hardEasy.push({i,hr});
+      const isVert=ALL[i].type==='q' || /vert|hill|incline|stair|climb/i.test((ALL[i].tag||'')+' '+(ALL[i].session||''));
+      if(isVert && l.elev!=null && l.elev!=='' && !isNaN(ev) && ev<40) flatVert.push({i,ev});
+    }
     if(ALL[i].type==='d')continue;
-    const st=logs[dk(ALL[i])]?.st;
+    const st=l?.st;
     if(st==='d'||st==='p')done++; else if(st==='s')skip++;
   }
   const props=[];
@@ -1446,14 +1503,17 @@ function coachReview(){
       body:`You missed the long run on ${dlabel(m.i)}. Don't double up. Your next long run (${dlabel(nl)}) can be flagged as the week's priority — keep it, but no need to make up the distance.`,
       changes:[{dayKey:dk(ALL[nl]),patch:{note:'PRIORITY — replaces the long run you missed. Fuel and pace it well; do not add extra distance.',_adj:1}}]});
   });
-  return {shifts,misses,injury,done,skip,props};
+  return {shifts,misses,injury,done,skip,props,hardEasy,flatVert,z2,hasHR};
 }
 function coachAlerts(){
   const r=coachReview(), a=[];
   if(r.injury)a.push({type:'red',title:'Pain flagged in your notes',body:'Recent notes mention soreness or pain. Ease your next hard session and rest fully if it persists. Open "How am I doing" to apply an adjustment.'});
   if(r.shifts.length)a.push({type:'green',title:'Shift recognized',body:'A key session was moved by a day or two and counted as done — the plan reads this as on-track, not missed.'});
   if(r.misses.length)a.push({type:'amber',title:r.misses.length>1?r.misses.length+' key sessions missed':'A key session was missed',body:'Open "How am I doing" for the proposed adjustment. Don\'t double up to make up the distance.'});
-  if(!r.injury&&!r.misses.length&&r.done>=6&&r.skip===0)a.push({type:'green',title:'Strong consistency',body:'Six or more sessions done with no skips. Keep your easy days genuinely easy.'});
+  if(r.hardEasy.length)a.push({type:'amber',title:r.hardEasy.length>1?r.hardEasy.length+' easy runs ran hot':'An easy run ran hot',body:'Above your Zone 2 ceiling ('+r.z2+' bpm). Easy days build the aerobic engine — back the effort off so they stay easy.'});
+  if(r.flatVert.length)a.push({type:'grey',title:'Vert sessions logged little climb',body:r.flatVert.length+' hill/vert '+(r.flatVert.length>1?'sessions':'session')+' under ~40m of gain. Use the StairMaster or incline to actually bank the climb.'});
+  if(!r.z2&&r.hasHR)a.push({type:'grey',title:'Set your max HR',body:'Your runs have heart-rate data — add your max HR in "How am I doing" to check whether your easy days are truly easy.'});
+  if(!r.injury&&!r.misses.length&&!r.hardEasy.length&&r.done>=6&&r.skip===0)a.push({type:'green',title:'Strong consistency',body:'Six or more sessions done with no skips. Keep your easy days genuinely easy.'});
   if(!a.length)a.push({type:'grey',title:'Plan on track',body:'No adjustments needed. Log your sessions and check back as your block progresses.'});
   return a;
 }
@@ -1470,6 +1530,8 @@ function openRecal(){
   const pos=r.shifts.length?`<div class="alert green" style="margin:0 0 12px"><div class="alert-t">Recognized adjustments</div><div class="alert-b">${r.shifts.map(sh=>esc(dlabel(sh.i))+' long run was done '+esc(dlabel(sh.to))+' ('+sh.km+'km) — counted as complete, not missed.').join(' ')}</div></div>`:'';
   const needs=[];
   if(r.injury)needs.push('<div class="alert" style="margin:0 0 12px"><div class="alert-t">Pain flagged</div><div class="alert-b">Recent notes mention soreness or pain. Ease your next hard session; rest fully if it persists.</div></div>');
+  if(r.hardEasy.length)needs.push('<div class="alert amber" style="margin:0 0 12px"><div class="alert-t">Easy days running hot</div><div class="alert-b">'+r.hardEasy.map(x=>esc(dlabel(x.i))+' averaged '+x.hr+' bpm').join(' · ')+' — above your Zone 2 ceiling of '+r.z2+' bpm. Keep easy days genuinely easy; that is where the aerobic base is built.</div></div>');
+  if(r.flatVert.length)needs.push('<div class="alert" style="margin:0 0 12px"><div class="alert-t">Vert sessions, little climb</div><div class="alert-b">'+r.flatVert.map(x=>esc(dlabel(x.i))+' logged only '+x.ev+'m').join(' · ')+'. These are meant to bank vertical — use the StairMaster or treadmill incline to get real climb.</div></div>');
   r.misses.forEach(m=>needs.push(`<div class="alert amber" style="margin:0 0 12px"><div class="alert-t">Missed ${esc(TYPE[ALL[m.i].type]||'session')}</div><div class="alert-b">${esc(dlabel(m.i))} wasn't logged and no nearby make-up run was found. Don't double up.</div></div>`));
   const propHtml=PROPS.length?PROPS.map(p=>`<div class="prop"><div class="prop-t">${esc(p.title)}</div><div class="prop-b">${esc(p.body)}</div><button class="prop-apply" data-apply="${p.id}">Apply this adjustment</button></div>`).join(''):'';
   const applied=ovCount()?`<button class="linkrow" data-resetov="1" style="border-top:1px solid var(--rule);margin-top:6px"><span>Reset all adjustments</span><span>${ovCount()} active</span></button>`:'';
@@ -1481,8 +1543,16 @@ function openRecal(){
     ${pos}${needs.join('')}
     ${PROPS.length?`<div class="sec-label" style="margin:18px 0 6px">Proposed adjustments</div>${propHtml}`:''}
     ${(!pos&&!needs.length&&!PROPS.length)?'<p style="color:var(--grey);font-size:13px;line-height:1.6">Nothing to adjust. Log your sessions and check back — this reads your consistency, recognizes sessions you shifted by a day or two, and flags pain in your notes.</p>':''}
+    <div class="sec-label" style="margin:20px 0 8px">Heart-rate zones</div>
+    <div class="fld" style="margin-bottom:8px">
+      <label for="maxHrIn" style="display:block;font-family:var(--fm);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:8px">Your max HR</label>
+      <input class="inp" id="maxHrIn" type="number" inputmode="numeric" value="${getMaxHR()||''}" placeholder="e.g. 188">
+      <div style="font-family:var(--fm);font-size:9px;color:var(--dim);margin-top:6px">${r.z2?('Easy ceiling \u2248 '+r.z2+' bpm (75% of max). Easy runs above this get flagged.'):'Set this to check whether your easy days stay easy.'}</div>
+    </div>
     ${applied}
   `);
+  const hi=document.getElementById('maxHrIn');
+  if(hi)hi.onchange=()=>{ setMaxHR(hi.value); openRecal(); };
 }
 
 /* ── render ─────────────────────────────────────────── */
